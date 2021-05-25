@@ -2,8 +2,8 @@ import math
 from math import sin, cos
 import functools
 
-
 import numpy as np
+
 np.set_printoptions(suppress=True)
 
 
@@ -39,14 +39,14 @@ def rotate(angle, v):
 
     rm = np.array([b, c, v])
     arm = np.linalg.inv(rm)
-    
+
     rm4 = np.eye(4, dtype=np.float32)
-    rm4[:3,:3] = rm
+    rm4[:3, :3] = rm
     arm4 = np.eye(4, dtype=np.float32)
-    arm4[:3,:3] = arm
-    
+    arm4[:3, :3] = arm
+
     return arm4 @ rotate_ax(angle, axis=(0, 1)) @ rm4
-    
+
 
 @functools.lru_cache(maxsize=128)
 def translate(x, y, z):
