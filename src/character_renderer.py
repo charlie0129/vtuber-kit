@@ -67,7 +67,7 @@ def gl_drawing_loop(all_layers, psd_size):
         texture[:w, :h] = img
         return texture, (w / d, h / d)
 
-    vtuber_window_size = 512, 512
+    vtuber_window_size = 800, 800
 
     glfw.init()
     show_transparent_window()
