@@ -33,7 +33,7 @@ def extract_layers_from_psd(psd):
 
 def add_depth_to_layers(all_layers):
     with open('../assets/layer_depth.yaml', encoding='utf8') as f:
-        depth_info = yaml.load(f)
+        depth_info = yaml.load(f, yaml.FullLoader)
     for layer in all_layers:
         if layer['layer_path'] in depth_info:
             layer['layer_depth'] = depth_info[layer['layer_path']]
