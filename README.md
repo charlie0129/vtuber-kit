@@ -15,3 +15,8 @@
 4. 拍一张你直视电脑摄像头的照片（**闭上**眼睛和嘴巴），并命名为 `std_face_closed.png`，放入 `assets` 文件夹中。
 5. 准备一张~~萝莉~~任意图片，以及每个图层的深度信息，将 `psd` 格式图片和 `yaml` 格式的深度信息放入 `assets` 文件夹中。（如果你没有这种图片，你可以自己画 or 找别人画 ~~or 问我要~~）
 6. `python3 src/character_renderer.py` 开始运行。
+
+## Acknowledgements
+
+1. [RimoChan/Vtuber_Tutorial: 【教程】从零开始的自制Vtuber！ (github.com)](https://github.com/RimoChan/Vtuber_Tutorial)
+
