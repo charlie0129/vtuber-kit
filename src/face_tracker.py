@@ -6,11 +6,14 @@ import cv2
 import numpy as np
 import dlib
 
-# psd layer info
-psd_eye_layers = ['表情上/目/0', '表情上/目/1', '表情上/目/2', '表情上/目/3', '表情上/目/4']
-psd_mouth_layers = ['表情上/口/0', '表情上/口/1', '表情上/口/2', '表情上/口/3']
+config_data = {}
 
 detector = dlib.get_frontal_face_detector()
+
+
+def set_config_data(data_in):
+    global config_data
+    config_data = data_in
 
 
 def locate_main_face(img):
@@ -18,9 +21,6 @@ def locate_main_face(img):
     if not dets:
         return None
     return max(dets, key=lambda det: (det.right() - det.left()) * (det.bottom() - det.top()))
-
-
-predictor = dlib.shape_predictor('../assets/shape_predictor_68_face_landmarks.dat')
 
 
 def extract_face_landmarks(img, face_location):
@@ -78,7 +78,13 @@ def get_face_orientation_from_picture(img):
     return rotation_vals
 
 
+face_orientation = None
+
+
 def camera_capture_loop():
+    while 'config_name' not in config_data:
+        time.sleep(0.1)
+    global predictor
     global reference_face_orientation
     global face_orientation
     global current_eye_height
@@ -89,18 +95,19 @@ def camera_capture_loop():
     global open_eye_height
     global eye_height_step
     global mouth_height_step
-    reference_face_orientation = get_face_orientation_from_picture(cv2.imread('../assets/std_face_open.png'))
+    predictor = dlib.shape_predictor(config_data['face_landmarks_path'])
+    reference_face_orientation = get_face_orientation_from_picture(cv2.imread(config_data['std_face_open_image_path']))
     face_orientation = reference_face_orientation - reference_face_orientation
     current_eye_height = open_eye_height = eye_height
     current_mouth_height = open_mouth_height = mouth_height
-    get_face_orientation_from_picture(cv2.imread('../assets/std_face_closed.png'))
+    get_face_orientation_from_picture(cv2.imread(config_data['std_face_closed_image_path']))
     closed_mouth_height = eye_height
     closed_eye_height = mouth_height
 
-    eye_height_step = (open_eye_height - closed_eye_height) / (len(psd_eye_layers) - 1)
-    mouth_height_step = (open_mouth_height - closed_mouth_height) / (len(psd_mouth_layers) - 1)
+    eye_height_step = (open_eye_height - closed_eye_height) / (len(config_data['psd_eye_layers']) - 1)
+    mouth_height_step = (open_mouth_height - closed_mouth_height) / (len(config_data['psd_mouth_layers']) - 1)
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(config_data['camera_index'])
     logging.info('Face capture has started...')
     while True:
         ret, img = cap.read()
@@ -118,13 +125,13 @@ def get_current_face_orientation():
 
 def get_current_eye_size():
     size = int((current_eye_height - closed_eye_height) / eye_height_step)
-    size = size if size < len(psd_eye_layers) else len(psd_eye_layers) - 1
+    size = size if size < len(config_data['psd_eye_layers']) else len(config_data['psd_eye_layers']) - 1
     return size if size >= 0 else 0
 
 
 def get_current_mouth_size():
     size = int((current_mouth_height - closed_mouth_height) / mouth_height_step)
-    size = size if size < len(psd_mouth_layers) else len(psd_mouth_layers) - 1
+    size = size if size < len(config_data['psd_mouth_layers']) else len(config_data['psd_mouth_layers']) - 1
     return size if size >= 0 else 0
 
 
