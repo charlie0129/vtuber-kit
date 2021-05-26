@@ -1,9 +1,7 @@
-import sys
 import time
 import math
 
 import numpy as np
-import yaml
 import os
 import argparse
 import json
