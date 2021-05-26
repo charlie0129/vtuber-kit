@@ -107,7 +107,7 @@ def camera_capture_loop():
     eye_height_step = (open_eye_height - closed_eye_height) / (len(config_data['psd_eye_layers']) - 1)
     mouth_height_step = (open_mouth_height - closed_mouth_height) / (len(config_data['psd_mouth_layers']) - 1)
 
-    cap = cv2.VideoCapture(config_data['camera_index'])
+    cap = cv2.VideoCapture(config_data['camera_path'])
     logging.info('Face capture has started...')
     while True:
         ret, img = cap.read()

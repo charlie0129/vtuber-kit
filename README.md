@@ -24,7 +24,7 @@
     2. 将 `std_face_closed_image_path` 的值改为你闭上眼睛和嘴巴的图片的位置
     3. 将 `face_landmarks_path` 的值改为你下载的 `shape_predictor_68_face_landmarks.dat` 文件的位置
     4. 将 `psd_file_path` 的值改为 `psd` 图片的位置
-    5. 将 `camera_index` 改为你电脑摄像头的路径，一般来说保持 `0` 即可
+    5. 将 `camera_path` 改为你电脑摄像头的路径，一般来说保持 `0` 即可
     6. 其他设置比如深度信息等根据 `psd` 人物的不同酌情修改（要是用我给的萝莉的话就不用改了）
 5. 在命令行参数里指定你要用的配置文件，比如  `python3 src/character_renderer.py assets/sample_config.json` 使用样例配置文件运行，。
 

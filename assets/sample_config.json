@@ -62,7 +62,7 @@
   },
   "std_face_open_image_path": "assets/std_face_open.png",
   "std_face_closed_image_path": "assets/std_face_closed.png",
-  "camera_index": 0,
+  "camera_path": 0,
   "motion_buffer_strength": 0.95,
   "renderer_window_size": [
     800,
