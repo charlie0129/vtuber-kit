@@ -2,10 +2,12 @@
 
 ## 环境依赖
 
-1. python3
-2. dlib
-3. opencv
-4. numpy
+1. python 3.8
+2. dlib 19.22.0
+3. opencv-python 4.5.1.48
+4. numpy 1.20.3
+5. glfw 2.1.0
+6. psd-tools 1.9.17
 
 ## 运行方法
 
