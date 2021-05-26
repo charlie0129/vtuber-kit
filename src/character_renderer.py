@@ -17,6 +17,7 @@ import matrix
 
 config_data = {}
 
+
 def extract_layers_from_psd(psd):
     all_layers = []
 
@@ -162,13 +163,12 @@ if __name__ == '__main__':
     config_file = open(args.config)
     config_data = json.load(config_file)
 
-    print('loaded config: '+config_data['config_name'])
+    print('loaded config: ' + config_data['config_name'])
 
     face_tracker.set_config_data(config_data)
 
     while face_tracker.get_current_face_orientation() is None:
         time.sleep(0.1)
-
 
     psd = PSDImage.open(config_data['psd_file_path'])
 
