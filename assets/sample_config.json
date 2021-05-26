@@ -1,67 +1,71 @@
 {
-    "config_name": "水結様_sample",
-    "face_landmarks_path": "assets/shape_predictor_68_face_landmarks.dat",
-    "psd_file_path": "assets/空色れん水結様簡略版.psd",
-    "psd_eye_layers": [
-        "表情上/目/0",
-        "表情上/目/1",
-        "表情上/目/2",
-        "表情上/目/3",
-        "表情上/目/4"
+  "config_name": "水結様_sample",
+  "face_landmarks_path": "assets/shape_predictor_68_face_landmarks.dat",
+  "psd_file_path": "assets/空色れん水結様簡略版.psd",
+  "psd_eye_layers": [
+    "表情上/目/0",
+    "表情上/目/1",
+    "表情上/目/2",
+    "表情上/目/3",
+    "表情上/目/4"
+  ],
+  "psd_mouth_layers": [
+    "表情上/口/0",
+    "表情上/口/1",
+    "表情上/口/2",
+    "表情上/口/3"
+  ],
+  "psd_eye_layer_prefix": "表情上/目/",
+  "psd_mouth_layer_prefix": "表情上/口/",
+  "psd_eye_layer_suffix": "%d",
+  "psd_mouth_layer_suffix": "%d",
+  "psd_body_layer_name": "身体基本/体",
+  "psd_layer_depths": {
+    "表情上/鼻/0": 0.62,
+    "表情上/眉/1": 0.65,
+    "表情上/目/0": 0.68,
+    "表情上/目/1": 0.68,
+    "表情上/目/2": 0.68,
+    "表情上/目/3": 0.68,
+    "表情上/目/4": 0.68,
+    "表情上/口/0": 0.65,
+    "表情上/口/1": 0.65,
+    "表情上/口/2": 0.65,
+    "表情上/口/3": 0.65,
+    "表情上/チーク/0": 0.65,
+    "身体基本/髪飾り": 0.65,
+    "身体基本/頭ひもリボン": 0.7,
+    "身体基本/前髪": 0.65,
+    "身体基本/頭リボン": 0.7,
+    "身体基本/面": 0.7,
+    "身体基本/耳": [
+      [
+        0.65,
+        0.65
+      ],
+      [
+        0.75,
+        0.75
+      ]
     ],
-    "psd_mouth_layers": [
-        "表情上/口/0",
-        "表情上/口/1",
-        "表情上/口/2",
-        "表情上/口/3"
-    ],
-    "psd_eye_layer_prefix": "表情上/目/",
-    "psd_mouth_layer_prefix": "表情上/口/",
-    "psd_eye_layer_suffix": "%d",
-    "psd_mouth_layer_suffix": "%d",
-    "psd_body_layer_name": "身体基本/体",
-    "psd_layer_depths": {
-        "表情上/鼻/0": 0.62,
-        "表情上/眉/1": 0.65,
-        "表情上/目/0": 0.68,
-        "表情上/目/1": 0.68,
-        "表情上/目/2": 0.68,
-        "表情上/目/3": 0.68,
-        "表情上/目/4": 0.68,
-        "表情上/口/0": 0.65,
-        "表情上/口/1": 0.65,
-        "表情上/口/2": 0.65,
-        "表情上/口/3": 0.65,
-        "表情上/チーク/0": 0.65,
-        "身体基本/髪飾り": 0.65,
-        "身体基本/頭ひもリボン": 0.7,
-        "身体基本/前髪": 0.65,
-        "身体基本/頭リボン": 0.7,
-        "身体基本/面": 0.7,
-        "身体基本/耳": [
-            [
-                0.65,
-                0.65
-            ],
-            [
-                0.75,
-                0.75
-            ]
-        ],
-        "身体基本/体": 0.7,
-        "身体基本/髪": [
-            [
-                0.7,
-                0.7
-            ],
-            [
-                0.9,
-                0.9
-            ]
-        ]
-    },
-    "std_face_open_image_path": "assets/std_face_open.png",
-    "std_face_closed_image_path": "assets/std_face_closed.png",
-    "camera_index": 0,
-    "motion_buffer_strength": 0.95
+    "身体基本/体": 0.7,
+    "身体基本/髪": [
+      [
+        0.7,
+        0.7
+      ],
+      [
+        0.9,
+        0.9
+      ]
+    ]
+  },
+  "std_face_open_image_path": "assets/std_face_open.png",
+  "std_face_closed_image_path": "assets/std_face_closed.png",
+  "camera_index": 0,
+  "motion_buffer_strength": 0.95,
+  "renderer_window_size": [
+    800,
+    800
+  ]
 }

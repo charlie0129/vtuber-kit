@@ -69,17 +69,17 @@ def gl_drawing_loop(all_layers, psd_size):
         texture[:w, :h] = img
         return texture, (w / d, h / d)
 
-    vtuber_window_size = 800, 800
+    renderer_window_size = config_data['renderer_window_size']
 
     glfw.init()
     show_transparent_window()
     glfw.window_hint(glfw.RESIZABLE, False)
-    window = glfw.create_window(*vtuber_window_size, config_data['config_name'], None, None)
+    window = glfw.create_window(*renderer_window_size, config_data['config_name'], None, None)
     glfw.make_context_current(window)
     monitor_size = glfw.get_video_mode(glfw.get_primary_monitor()).size
-    glfw.set_window_pos(window, monitor_size.width - vtuber_window_size[0], monitor_size.height - vtuber_window_size[1])
+    glfw.set_window_pos(window, monitor_size.width - renderer_window_size[0], monitor_size.height - renderer_window_size[1])
 
-    glViewport(0, 0, *vtuber_window_size)
+    glViewport(0, 0, *renderer_window_size)
 
     glEnable(GL_TEXTURE_2D)
     glEnable(GL_BLEND)
