@@ -19,7 +19,7 @@
     3. 下载 `shape_predictor_68_face_landmarks.dat`，你可以从[这里](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)获得它。
     4. 准备一张~~萝莉~~ or 任意 `psd` 图片，以及每个图层的深度信息，深度信息写在配置文件中（见配置文件样例）如果你没有这种图片，你可以自己画 or 找别人画 ~~or 问我要~~
     5. 将以上所有文件放到你找得到的地方（建议放在 `assets` 文件夹里）
-4. 编辑配置文件
+4. 编辑配置文件，将样例配置文件复制一份
     1. 将 `std_face_open_image_path` 的值改为你张开眼睛和嘴巴的图片的位置（以下路径均建议使用相对路径）
     2. 将 `std_face_closed_image_path` 的值改为你闭上眼睛和嘴巴的图片的位置
     3. 将 `face_landmarks_path` 的值改为你下载的 `shape_predictor_68_face_landmarks.dat` 文件的位置
