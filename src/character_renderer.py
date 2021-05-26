@@ -9,7 +9,7 @@ from OpenGL.GL import *
 
 from psd_tools import PSDImage
 
-import face_capture
+import face_tracker
 import matrix
 
 
@@ -45,7 +45,7 @@ motion_buffer = None
 def use_motion_buffer():
     global motion_buffer
     buffer_strength = 0.95
-    face_orientation = face_capture.get_current_face_orientation()
+    face_orientation = face_tracker.get_current_face_orientation()
     if motion_buffer is None:
         motion_buffer = face_orientation
     else:
@@ -100,8 +100,8 @@ def gl_drawing_loop(all_layers, psd_size):
         glClear(GL_COLOR_BUFFER_BIT)
         horizontal_rotation_val, vertical_rotation_val = use_motion_buffer()
         for layer in all_layers:
-            if layer['layer_path'] in face_capture.psd_eye_layers + face_capture.psd_mouth_layers:
-                if layer['layer_path'] != '表情上/目/' + str(face_capture.get_current_eye_size()) and layer['layer_path'] != '表情上/口/' + str(face_capture.get_current_mouth_size()):
+            if layer['layer_path'] in face_tracker.psd_eye_layers + face_tracker.psd_mouth_layers:
+                if layer['layer_path'] != '表情上/目/' + str(face_tracker.get_current_eye_size()) and layer['layer_path'] != '表情上/口/' + str(face_tracker.get_current_mouth_size()):
                     continue
             a, b, c, d = layer['layer_location']
             z = layer['layer_depth']
