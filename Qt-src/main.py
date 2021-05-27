@@ -1,5 +1,8 @@
 import os
+<<<<<<< HEAD
 from threading import Thread
+=======
+>>>>>>> c1686f1b2a30162a87d589f822c70793308d2d28
 
 import cv2
 from PyQt5.QtCore import Qt
@@ -114,7 +117,10 @@ class myMainForm(QMainWindow):
         self.ui.setupUi(self)
 
         self.camWindow = None
+<<<<<<< HEAD
         self.vtb_thread = None
+=======
+>>>>>>> c1686f1b2a30162a87d589f822c70793308d2d28
 
         self.ui.pushButton_shootPhoto.clicked.connect(self.open_camera_capture)
         self.ui.pushButton_start.clicked.connect(self.start_vtb)
@@ -124,6 +130,7 @@ class myMainForm(QMainWindow):
         self.camWindow.show()
 
     def start_vtb(self):
+<<<<<<< HEAD
         isAlive = False
         if self.vtb_thread == None:
             isAlive = False
@@ -138,11 +145,17 @@ class myMainForm(QMainWindow):
 
     def start_vtbThreadFunc(self):
         pyfilepath = "../src/character_renderer.py"
+=======
+        pyfilepath = "E:\Vtb\\vtuber-kit\src\character_renderer.py"
+>>>>>>> c1686f1b2a30162a87d589f822c70793308d2d28
         cmdMSD = "python %s" % pyfilepath
         p_res = os.popen(cmdMSD)
         print(p_res.read())
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c1686f1b2a30162a87d589f822c70793308d2d28
 if __name__ == '__main__':
     app = QApplication([])
     wid = myMainForm()
