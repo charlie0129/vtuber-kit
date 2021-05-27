@@ -139,9 +139,13 @@ class myMainForm(QMainWindow):
             pass
 
     def start_vtbThreadFunc(self):
-        pyfilepath = "../src/character_renderer.py"
-
-        cmdMSD = "python %s" % pyfilepath
+        pyfilepath = "src/character_renderer.py"
+        configFilePath = "assets/sample_config.json"
+        cmdMSD = ""
+        if self.ui.checkBox_debugOn.isChecked():
+            cmdMSD = "cd .. & python %s %s --debug" % (pyfilepath, configFilePath)
+        else:
+            cmdMSD = "cd .. & python %s %s" % (pyfilepath, configFilePath)
         p_res = os.popen(cmdMSD)
         print(p_res.read())
 
