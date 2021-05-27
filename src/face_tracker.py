@@ -56,7 +56,7 @@ def get_face_orientation(face_identifiers):
 cam_capture_count = 0
 _cam_capture_count_ = 0
 cam_fps_count_start_time = time.time()
-fps_count_interval = 4
+fps_count_interval = 5
 
 
 def get_face_orientation_from_picture(img):
@@ -179,11 +179,11 @@ def get_debug_camera_image():
     color = (255, 255, 255)
 
     draw_outlined_text(debug_cam_img,
-                       'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval),
+                       'Capture FPS: %.1f' % (cam_capture_count / fps_count_interval),
                        (20, 40),
                        (0, 255, 0))
     draw_outlined_text(debug_cam_img,
-                       'Render FPS: %.2f' % (character_render_count / fps_count_interval),
+                       'Render FPS: %.1f' % (character_render_count / fps_count_interval),
                        (20, 80),
                        (0, 255, 0))
     draw_outlined_text(debug_cam_img,
@@ -198,6 +198,10 @@ def get_debug_camera_image():
                                               else '(max)'),
                        (20, 160),
                        (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Face Orientation: [%.4f, %.4f]' % (face_orientation[0], face_orientation[1]),
+                       (20, 200),
+                       (0, 255, 0))
 
     for i in chain(range(0, 16), range(36, 41), range(42, 47), range(48, 60), range(27, 30), range(31, 35),
                    range(17, 21), range(22, 26)):
@@ -211,6 +215,22 @@ def get_debug_camera_image():
 
     for i, (px, py) in enumerate(debug_face_landmarks):
         cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
+
+    cv2.putText(debug_cam_img,
+                'Main face',
+                (int(debug_face_landmarks[0][0] - 10),
+                 int(debug_face_landmarks[24][1] - debug_face_landmarks[30][1] + debug_face_landmarks[27][1] - 5)),
+                cv2.FONT_HERSHEY_COMPLEX,
+                0.5,
+                (0, 255, 0))
+
+    cv2.rectangle(debug_cam_img,
+                  (int(debug_face_landmarks[0][0] - 10),
+                   int(debug_face_landmarks[24][1] - debug_face_landmarks[30][1] + debug_face_landmarks[27][1])),
+                  (int(debug_face_landmarks[16][0] + 15),
+                   int(debug_face_landmarks[8][1] + 10)),
+                  (0, 255, 0),
+                  1)
 
     return debug_cam_img
 
