@@ -232,7 +232,7 @@ def get_current_mouth_size():
 
 
 t = threading.Thread(target=camera_capture_loop)
-# t.setDaemon(True)
+t.setDaemon(True)
 t.start()
 
 if __name__ == '__main__':
