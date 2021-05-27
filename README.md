@@ -27,7 +27,7 @@
     5. 将 `camera_path` 改为你电脑摄像头的路径，一般来说保持 `0` 即可，除非你电脑有多个摄像头
     6. 深度信息等根据 `psd` 人物的不同酌情修改（要是用我给的萝莉的话就不用改了）
     7. 其他设置以后再说🙄
-5. 在命令行参数里指定你要用的配置文件，比如 `python3 src/character_renderer.py assets/sample_config.json` 使用样例配置文件运行
+5. 在命令行参数里指定你要用的配置文件，比如在项目*根目录*下 `python3 src/character_renderer.py assets/sample_config.json` 使用样例配置文件运行
 
 ## Acknowledgements
 
