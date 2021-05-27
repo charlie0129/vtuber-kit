@@ -190,7 +190,7 @@ if __name__ == '__main__':
                         help='toggle debug mode (show face landmarks)')
     args = parser.parse_args()
 
-    config_file = open(args.config)
+    config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
     config_data['debug'] = args.debug
 
