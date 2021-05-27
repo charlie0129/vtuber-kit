@@ -144,16 +144,16 @@ def debug_draw_line(img, start_point_idx, end_point_idx, color):
              3)
 
 
-def draw_outlined_text(img, str, point, color):
+def draw_outlined_text(img, text, point, color):
     cv2.putText(img,
-                str,
+                text,
                 point,
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1,
                 (0, 0, 0),
                 6)
     cv2.putText(img,
-                str,
+                text,
                 point,
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1,
@@ -207,7 +207,7 @@ def get_debug_camera_image():
     debug_draw_line(debug_cam_img, 42, 47, color)
 
     for i, (px, py) in enumerate(debug_face_landmarks):
-        cv2.rectangle(debug_cam_img, (int(px), int(py)-7), (int(px) + 10, int(py)+3), (0, 0, 0), -1)
+        cv2.rectangle(debug_cam_img, (int(px), int(py) - 7), (int(px) + 10, int(py) + 3), (0, 0, 0), -1)
 
     for i, (px, py) in enumerate(debug_face_landmarks):
         cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
