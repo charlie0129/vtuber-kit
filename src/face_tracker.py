@@ -161,24 +161,45 @@ def get_debug_camera_image():
     debug_cam_img = cam_img.copy()
     color = (255, 255, 255)
 
-    cv2.putText(debug_cam_img, 'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval), (20, 40),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.putText(debug_cam_img, 'Render FPS: %.2f' % (character_render_count / fps_count_interval), (20, 80),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.putText(debug_cam_img, 'Eye Size: %d %s' % (get_current_eye_size(),
-                                                    '' if get_current_eye_size() < len(
-                                                        config_data['psd_eye_layers']) - 1 else '(max)'), (20, 120),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.putText(debug_cam_img, 'Mouth Size: %d %s' % (get_current_mouth_size(),
-                                                      '' if get_current_mouth_size() < len(
-                                                          config_data['psd_mouth_layers']) - 1 else '(max)'), (20, 160),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(debug_cam_img,
+                'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval),
+                (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2)
+    cv2.putText(debug_cam_img,
+                'Render FPS: %.2f' % (character_render_count / fps_count_interval),
+                (20, 80),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2)
+    cv2.putText(debug_cam_img,
+                'Eye Size: %d %s' % (get_current_eye_size(),
+                                     '' if get_current_eye_size() < len(config_data['psd_eye_layers']) - 1
+                                     else '(max)'),
+                (20, 120),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2)
+    cv2.putText(debug_cam_img,
+                'Mouth Size: %d %s' % (get_current_mouth_size(),
+                                       '' if get_current_mouth_size() < len(config_data['psd_mouth_layers']) - 1
+                                       else '(max)'),
+                (20, 160),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2)
     for i, (px, py) in enumerate(debug_face_landmarks):
         cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
 
     for i in chain(range(0, 16), range(36, 41), range(42, 47), range(48, 60), range(27, 30), range(31, 35),
                    range(17, 21), range(22, 26)):
         debug_draw_line(debug_cam_img, i, i + 1, color)
+
     debug_draw_line(debug_cam_img, 36, 41, color)
     debug_draw_line(debug_cam_img, 42, 47, color)
     return debug_cam_img
