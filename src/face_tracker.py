@@ -5,6 +5,7 @@ import time
 import cv2
 import numpy as np
 import dlib
+from itertools import chain
 
 config_data = {}
 
@@ -52,13 +53,28 @@ def get_face_orientation(face_identifiers):
     return np.array([horizontal_rotation_val, vertical_rotation_val])
 
 
+cam_capture_count = 0
+_cam_capture_count_ = 0
+cam_fps_count_start_time = time.time()
+fps_count_interval = 4
+
+
 def get_face_orientation_from_picture(img):
-    global eye_height
+    global eye_height, _cam_capture_count_, cam_fps_count_start_time, cam_capture_count
     global mouth_height
+
     main_face_location = locate_main_face(img)
     if not main_face_location:
         return None
     face_landmarks = extract_face_landmarks(img, main_face_location)
+    if config_data['debug']:
+        global debug_face_landmarks
+        debug_face_landmarks = face_landmarks
+        _cam_capture_count_ += 1
+        if time.time() - cam_fps_count_start_time >= fps_count_interval:
+            cam_fps_count_start_time = time.time()
+            cam_capture_count = _cam_capture_count_
+            _cam_capture_count_ = 0
     key_points = face_landmarks
     eye_height = -(key_points[37][1] - key_points[41][1] +
                    key_points[38][1] - key_points[40][1] +
@@ -110,13 +126,62 @@ def camera_capture_loop():
     cap = cv2.VideoCapture(config_data['camera_path'])
     logging.info('Face capture has started...')
     while True:
-        ret, img = cap.read()
-        new_face_orientation = get_face_orientation_from_picture(img)
+        global cam_img
+        ret, cam_img = cap.read()
+        new_face_orientation = get_face_orientation_from_picture(cam_img)
         current_eye_height = eye_height
         current_mouth_height = mouth_height
         if new_face_orientation is not None:
             face_orientation = new_face_orientation - reference_face_orientation
         time.sleep(1 / 60)
+
+
+def debug_draw_line(img, start_point_idx, end_point_idx, color):
+    cv2.line(img,
+             (int(debug_face_landmarks[start_point_idx][0]), int(debug_face_landmarks[start_point_idx][1])),
+             (int(debug_face_landmarks[end_point_idx][0]), int(debug_face_landmarks[end_point_idx][1])),
+             color,
+             2)
+
+
+character_render_count = 0
+_character_render_count_ = 0
+render_fps_count_start_time = time.time()
+
+
+def get_debug_camera_image():
+    global cam_capture_count, fps_count_interval, character_render_count, _character_render_count_, start_time, render_fps_count_start_time
+
+    _character_render_count_ += 1
+    if time.time() - render_fps_count_start_time >= fps_count_interval:
+        render_fps_count_start_time = time.time()
+        character_render_count = _character_render_count_
+        _character_render_count_ = 0
+
+    debug_cam_img = cam_img.copy()
+    color = (255, 255, 255)
+
+    cv2.putText(debug_cam_img, 'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval), (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(debug_cam_img, 'Render FPS: %.2f' % (character_render_count / fps_count_interval), (20, 80),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(debug_cam_img, 'Eye Size: %d %s' % (get_current_eye_size(),
+                                                    '' if get_current_eye_size() < len(
+                                                        config_data['psd_eye_layers']) - 1 else '(max)'), (20, 120),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(debug_cam_img, 'Mouth Size: %d %s' % (get_current_mouth_size(),
+                                                      '' if get_current_mouth_size() < len(
+                                                          config_data['psd_mouth_layers']) - 1 else '(max)'), (20, 160),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    for i, (px, py) in enumerate(debug_face_landmarks):
+        cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
+
+    for i in chain(range(0, 16), range(36, 41), range(42, 47), range(48, 60), range(27, 30), range(31, 35),
+                   range(17, 21), range(22, 26)):
+        debug_draw_line(debug_cam_img, i, i + 1, color)
+    debug_draw_line(debug_cam_img, 36, 41, color)
+    debug_draw_line(debug_cam_img, 42, 47, color)
+    return debug_cam_img
 
 
 def get_current_face_orientation():
@@ -136,7 +201,7 @@ def get_current_mouth_size():
 
 
 t = threading.Thread(target=camera_capture_loop)
-t.setDaemon(True)
+# t.setDaemon(True)
 t.start()
 
 if __name__ == '__main__':

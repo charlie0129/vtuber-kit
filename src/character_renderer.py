@@ -6,6 +6,7 @@ import os
 import argparse
 import json
 import glfw
+import cv2
 from OpenGL.GL import *
 
 from psd_tools import PSDImage
@@ -77,7 +78,8 @@ def gl_drawing_loop(all_layers, psd_size):
     window = glfw.create_window(*renderer_window_size, config_data['config_name'], None, None)
     glfw.make_context_current(window)
     monitor_size = glfw.get_video_mode(glfw.get_primary_monitor()).size
-    glfw.set_window_pos(window, monitor_size.width - renderer_window_size[0], monitor_size.height - renderer_window_size[1])
+    glfw.set_window_pos(window, monitor_size.width - renderer_window_size[0],
+                        monitor_size.height - renderer_window_size[1])
 
     glViewport(0, 0, *renderer_window_size)
 
@@ -144,6 +146,8 @@ def gl_drawing_loop(all_layers, psd_size):
                 glVertex4f(*a)
             glEnd()
         glfw.swap_buffers(window)
+        if config_data['debug']:
+            cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
 
 
 def dir_path(string):
@@ -153,13 +157,42 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 
+def manual_start(config_path):
+    global config_file
+    global config_data
+    config_file = open(config_path)
+    config_data = json.load(config_file)
+    config_data['debug'] = args.debug
+
+    print('loaded config: ' + config_data['config_name'])
+
+    face_tracker.set_config_data(config_data)
+
+    while face_tracker.get_current_face_orientation() is None:
+        time.sleep(0.1)
+
+    global psd, all_layers, size
+    psd = PSDImage.open(config_data['psd_file_path'])
+
+    all_layers, size = extract_layers_from_psd(psd)
+    add_depth_to_layers(all_layers)
+    gl_drawing_loop(all_layers, size)
+
+
+def manual_stop():
+    exit(0)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('config', type=dir_path, help='path to the config file (json)')
+    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+                        help='toggle debug mode (show face landmarks)')
     args = parser.parse_args()
 
     config_file = open(args.config)
     config_data = json.load(config_file)
+    config_data['debug'] = args.debug
 
     print('loaded config: ' + config_data['config_name'])
 
