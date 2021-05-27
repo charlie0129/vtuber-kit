@@ -141,7 +141,24 @@ def debug_draw_line(img, start_point_idx, end_point_idx, color):
              (int(debug_face_landmarks[start_point_idx][0]), int(debug_face_landmarks[start_point_idx][1])),
              (int(debug_face_landmarks[end_point_idx][0]), int(debug_face_landmarks[end_point_idx][1])),
              color,
-             2)
+             3)
+
+
+def draw_outlined_text(img, str, point, color):
+    cv2.putText(img,
+                str,
+                point,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 0, 0),
+                6)
+    cv2.putText(img,
+                str,
+                point,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                color,
+                2)
 
 
 character_render_count = 0
@@ -161,40 +178,26 @@ def get_debug_camera_image():
     debug_cam_img = cam_img.copy()
     color = (255, 255, 255)
 
-    cv2.putText(debug_cam_img,
-                'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval),
-                (20, 40),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2)
-    cv2.putText(debug_cam_img,
-                'Render FPS: %.2f' % (character_render_count / fps_count_interval),
-                (20, 80),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2)
-    cv2.putText(debug_cam_img,
-                'Eye Size: %d %s' % (get_current_eye_size(),
-                                     '' if get_current_eye_size() < len(config_data['psd_eye_layers']) - 1
-                                     else '(max)'),
-                (20, 120),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2)
-    cv2.putText(debug_cam_img,
-                'Mouth Size: %d %s' % (get_current_mouth_size(),
-                                       '' if get_current_mouth_size() < len(config_data['psd_mouth_layers']) - 1
-                                       else '(max)'),
-                (20, 160),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2)
-    for i, (px, py) in enumerate(debug_face_landmarks):
-        cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
+    draw_outlined_text(debug_cam_img,
+                       'Capture FPS: %.2f' % (cam_capture_count / fps_count_interval),
+                       (20, 40),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Render FPS: %.2f' % (character_render_count / fps_count_interval),
+                       (20, 80),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Eye Size: %d %s' % (get_current_eye_size(),
+                                            '' if get_current_eye_size() < len(config_data['psd_eye_layers']) - 1
+                                            else '(max)'),
+                       (20, 120),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Mouth Size: %d %s' % (get_current_mouth_size(),
+                                              '' if get_current_mouth_size() < len(config_data['psd_mouth_layers']) - 1
+                                              else '(max)'),
+                       (20, 160),
+                       (0, 255, 0))
 
     for i in chain(range(0, 16), range(36, 41), range(42, 47), range(48, 60), range(27, 30), range(31, 35),
                    range(17, 21), range(22, 26)):
@@ -202,6 +205,13 @@ def get_debug_camera_image():
 
     debug_draw_line(debug_cam_img, 36, 41, color)
     debug_draw_line(debug_cam_img, 42, 47, color)
+
+    for i, (px, py) in enumerate(debug_face_landmarks):
+        cv2.rectangle(debug_cam_img, (int(px), int(py)-7), (int(px) + 10, int(py)+3), (0, 0, 0), -1)
+
+    for i, (px, py) in enumerate(debug_face_landmarks):
+        cv2.putText(debug_cam_img, str(i), (int(px), int(py)), cv2.FONT_HERSHEY_COMPLEX, 0.25, (0, 255, 255))
+
     return debug_cam_img
 
 
