@@ -1,16 +1,20 @@
-import sys
+import time
 import math
 
 import numpy as np
-import yaml
-
+import os
+import argparse
+import json
 import glfw
+import cv2
 from OpenGL.GL import *
 
 from psd_tools import PSDImage
 
 import face_tracker
 import matrix
+
+config_data = {}
 
 
 def extract_layers_from_psd(psd):
@@ -32,8 +36,7 @@ def extract_layers_from_psd(psd):
 
 
 def add_depth_to_layers(all_layers):
-    with open('../assets/layer_depth.yaml', encoding='utf8') as f:
-        depth_info = yaml.load(f, yaml.FullLoader)
+    depth_info = config_data['psd_layer_depths']
     for layer in all_layers:
         if layer['layer_path'] in depth_info:
             layer['layer_depth'] = depth_info[layer['layer_path']]
@@ -44,7 +47,7 @@ motion_buffer = None
 
 def use_motion_buffer():
     global motion_buffer
-    buffer_strength = 0.95
+    buffer_strength = config_data['motion_buffer_strength']
     face_orientation = face_tracker.get_current_face_orientation()
     if motion_buffer is None:
         motion_buffer = face_orientation
@@ -67,17 +70,18 @@ def gl_drawing_loop(all_layers, psd_size):
         texture[:w, :h] = img
         return texture, (w / d, h / d)
 
-    vtuber_window_size = 800, 800
+    renderer_window_size = config_data['renderer_window_size']
 
     glfw.init()
     show_transparent_window()
     glfw.window_hint(glfw.RESIZABLE, False)
-    window = glfw.create_window(*vtuber_window_size, 'vtuber', None, None)
+    window = glfw.create_window(*renderer_window_size, config_data['config_name'], None, None)
     glfw.make_context_current(window)
     monitor_size = glfw.get_video_mode(glfw.get_primary_monitor()).size
-    glfw.set_window_pos(window, monitor_size.width - vtuber_window_size[0], monitor_size.height - vtuber_window_size[1])
+    glfw.set_window_pos(window, monitor_size.width - renderer_window_size[0],
+                        monitor_size.height - renderer_window_size[1])
 
-    glViewport(0, 0, *vtuber_window_size)
+    glViewport(0, 0, *renderer_window_size)
 
     glEnable(GL_TEXTURE_2D)
     glEnable(GL_BLEND)
@@ -99,10 +103,15 @@ def gl_drawing_loop(all_layers, psd_size):
         glClearColor(0, 0, 0, 0)
         glClear(GL_COLOR_BUFFER_BIT)
         horizontal_rotation_val, vertical_rotation_val = use_motion_buffer()
+
         for layer in all_layers:
-            if layer['layer_path'] in face_tracker.psd_eye_layers + face_tracker.psd_mouth_layers:
-                if layer['layer_path'] != '表情上/目/' + str(face_tracker.get_current_eye_size()) and layer['layer_path'] != '表情上/口/' + str(face_tracker.get_current_mouth_size()):
+            if layer['layer_path'] in config_data['psd_eye_layers'] + config_data['psd_mouth_layers']:
+                if layer['layer_path'] != config_data['psd_eye_layer_prefix'] \
+                        + config_data['psd_eye_layer_suffix'] % face_tracker.get_current_eye_size() \
+                        and layer['layer_path'] != config_data['psd_mouth_layer_prefix'] + \
+                        config_data['psd_mouth_layer_suffix'] % face_tracker.get_current_mouth_size():
                     continue
+
             a, b, c, d = layer['layer_location']
             z = layer['layer_depth']
             if type(z) in [int, float]:
@@ -127,7 +136,7 @@ def gl_drawing_loop(all_layers, psd_size):
                 b = p[4:8]
                 a = a @ model
                 a[0:2] *= a[2]
-                if not layer['layer_path'] == '身体基本/体':
+                if not layer['layer_path'] == config_data['psd_body_layer_name']:
                     a = a @ matrix.translate(0, 0, -1) \
                         @ matrix.rotate_ax(horizontal_rotation_val, axis=(0, 2)) \
                         @ matrix.rotate_ax(vertical_rotation_val, axis=(2, 1)) \
@@ -137,10 +146,63 @@ def gl_drawing_loop(all_layers, psd_size):
                 glVertex4f(*a)
             glEnd()
         glfw.swap_buffers(window)
+        if config_data['debug']:
+            cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
+
+
+def dir_path(string):
+    if os.path.isfile(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+
+
+def manual_start(config_path):
+    global config_file
+    global config_data
+    config_file = open(config_path)
+    config_data = json.load(config_file)
+    config_data['debug'] = args.debug
+
+    print('loaded config: ' + config_data['config_name'])
+
+    face_tracker.set_config_data(config_data)
+
+    while face_tracker.get_current_face_orientation() is None:
+        time.sleep(0.1)
+
+    global psd, all_layers, size
+    psd = PSDImage.open(config_data['psd_file_path'])
+
+    all_layers, size = extract_layers_from_psd(psd)
+    add_depth_to_layers(all_layers)
+    gl_drawing_loop(all_layers, size)
+
+
+def manual_stop():
+    exit(0)
 
 
 if __name__ == '__main__':
-    psd = PSDImage.open('../assets/空色れん水結様簡略版.psd')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', type=dir_path, help='path to the config file (json)')
+    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+                        help='toggle debug mode (show face landmarks)')
+    args = parser.parse_args()
+
+    config_file = open(args.config)
+    config_data = json.load(config_file)
+    config_data['debug'] = args.debug
+
+    print('loaded config: ' + config_data['config_name'])
+
+    face_tracker.set_config_data(config_data)
+
+    while face_tracker.get_current_face_orientation() is None:
+        time.sleep(0.1)
+
+    psd = PSDImage.open(config_data['psd_file_path'])
+
     all_layers, size = extract_layers_from_psd(psd)
     add_depth_to_layers(all_layers)
     gl_drawing_loop(all_layers, size)
