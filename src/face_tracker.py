@@ -178,31 +178,6 @@ def get_debug_camera_image():
     debug_cam_img = cam_img.copy()
     color = (255, 255, 255)
 
-    draw_outlined_text(debug_cam_img,
-                       'Capture FPS: %.1f' % (cam_capture_count / fps_count_interval),
-                       (20, 40),
-                       (0, 255, 0))
-    draw_outlined_text(debug_cam_img,
-                       'Render FPS: %.1f' % (character_render_count / fps_count_interval),
-                       (20, 80),
-                       (0, 255, 0))
-    draw_outlined_text(debug_cam_img,
-                       'Eye Size: %d %s' % (get_current_eye_size(),
-                                            '' if get_current_eye_size() < len(config_data['psd_eye_layers']) - 1
-                                            else '(max)'),
-                       (20, 120),
-                       (0, 255, 0))
-    draw_outlined_text(debug_cam_img,
-                       'Mouth Size: %d %s' % (get_current_mouth_size(),
-                                              '' if get_current_mouth_size() < len(config_data['psd_mouth_layers']) - 1
-                                              else '(max)'),
-                       (20, 160),
-                       (0, 255, 0))
-    draw_outlined_text(debug_cam_img,
-                       'Face Orientation: [%.4f, %.4f]' % (face_orientation[0], face_orientation[1]),
-                       (20, 200),
-                       (0, 255, 0))
-
     for i in chain(range(0, 16), range(36, 41), range(42, 47), range(48, 60), range(27, 30), range(31, 35),
                    range(17, 21), range(22, 26)):
         debug_draw_line(debug_cam_img, i, i + 1, color)
@@ -231,6 +206,31 @@ def get_debug_camera_image():
                    int(debug_face_landmarks[8][1] + 10)),
                   (0, 255, 0),
                   1)
+
+    draw_outlined_text(debug_cam_img,
+                       'Capture FPS: %.1f' % (cam_capture_count / fps_count_interval),
+                       (20, 40),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Render FPS: %.1f' % (character_render_count / fps_count_interval),
+                       (20, 80),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Eye Size: %d %s' % (get_current_eye_size(),
+                                            '' if get_current_eye_size() < len(config_data['psd_eye_layers']) - 1
+                                            else '(max)'),
+                       (20, 120),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Mouth Size: %d %s' % (get_current_mouth_size(),
+                                              '' if get_current_mouth_size() < len(config_data['psd_mouth_layers']) - 1
+                                              else '(max)'),
+                       (20, 160),
+                       (0, 255, 0))
+    draw_outlined_text(debug_cam_img,
+                       'Face Orientation: [%.4f, %.4f]' % (face_orientation[0], face_orientation[1]),
+                       (20, 200),
+                       (0, 255, 0))
 
     return debug_cam_img
 
