@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         self.label_charaPreview.setObjectName("label_charaPreview")
         self.Image_preview = QtWidgets.QLabel(self.centralwidget)
         self.Image_preview.setGeometry(QtCore.QRect(650, 50, 211, 241))
-        self.Image_preview.setText("")
+        self.Image_preview.setText("【暂无预览】")
         self.Image_preview.setObjectName("Image_preview")
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_start.setGeometry(QtCore.QRect(610, 500, 181, 51))

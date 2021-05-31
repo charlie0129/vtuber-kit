@@ -1,19 +1,21 @@
+import json
 import os
 from threading import Thread
 
-
 import cv2
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtMultimedia import QCamera
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
+from psd_tools import PSDImage
 
 from wid import Ui_MainWindow
 from camWid import Ui_Form as Cam_Ui_Form
 
 
 class myPhotoShooter(QWidget):
+    checkSignal = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
 
@@ -33,7 +35,6 @@ class myPhotoShooter(QWidget):
         self.ui.button_shoot.clicked.connect(self.shoot_photo)
         self.ui.button_back.clicked.connect(self.back_step)
         self.ui.button_openCam.clicked.connect(self.start_camera)
-        self.ui.button_confrim.clicked.connect(self.capture_finish)
         self.timer.timeout.connect(self.show_camera)
 
     def start_camera(self):
@@ -101,9 +102,6 @@ class myPhotoShooter(QWidget):
             self.user_step = 2
             self.ui.button_confrim.setEnabled(False)
 
-    def capture_finish(self):
-        self.close()
-
 
 class myMainForm(QMainWindow):
     def __init__(self):
@@ -114,20 +112,52 @@ class myMainForm(QMainWindow):
         # 初始化界面
         self.ui.setupUi(self)
 
+        self.chara_name = None
         self.camWindow = None
         self.vtb_thread = None
 
-
         self.ui.pushButton_shootPhoto.clicked.connect(self.open_camera_capture)
         self.ui.pushButton_start.clicked.connect(self.start_vtb)
+        self.ui.pushButton_choosePsd.clicked.connect(self.scan_psd_files)
+
+    def scan_psd_files(self):
+        self.ui.comboBox_chooseChara.disconnect()
+        self.ui.comboBox_chooseChara.clear()
+        psd_file_paths = []
+        for roots, dirs, files in os.walk("../assets"):
+            for filename in files:
+                if filename.endswith("psd"):
+                    psd_file_paths.append(filename)
+        for filename in psd_file_paths:
+            name = filename.split("/")[-1].split(".")[0]
+            self.ui.comboBox_chooseChara.addItem(name)
+        self.ui.comboBox_chooseChara.currentIndexChanged.connect(self.on_chara_choose)
+
+    def on_chara_choose(self):
+        text = self.ui.comboBox_chooseChara.currentText()
+        if text is not None:
+            filename = "../assets/" + text
+            psd = PSDImage.open(filename + ".psd")
+            if not os.path.exists(filename + ".png"):
+                psd.composite().save(filename + ".png")
+            pixmap_chara = QPixmap(filename + ".png").scaled(
+                self.ui.Image_preview.width(), self.ui.Image_preview.height())
+            self.ui.Image_preview.setPixmap(pixmap_chara)
+            self.chara_name = text
 
     def open_camera_capture(self):
         self.camWindow = myPhotoShooter()
+        self.camWindow.ui.button_confrim.clicked.connect(self.updateCaptureChecked)
         self.camWindow.show()
+
+    def updateCaptureChecked(self):
+        self.ui.checkBox_finish.setChecked(True)
+        self.ui.checkBox_finish.setText("已完成")
+        self.camWindow.close()
 
     def start_vtb(self):
         isAlive = False
-        if self.vtb_thread == None:
+        if self.vtb_thread is None:
             isAlive = False
         elif self.vtb_thread.is_alive():
             isAlive = True
@@ -135,12 +165,20 @@ class myMainForm(QMainWindow):
             self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
             self.vtb_thread.start()
         else:
-            # TODO:关闭线程
+            # TODO:关闭线程（调接口？）
             pass
 
     def start_vtbThreadFunc(self):
         pyfilepath = "src/character_renderer.py"
         configFilePath = "assets/sample_config.json"
+
+        config_file = open("../" + configFilePath, encoding="utf-8")
+        config_data = json.load(config_file)
+        config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
+        config_file.close()
+        with open("../" + configFilePath, 'w') as f:
+            json.dump(config_data, f)
+
         cmdMSD = ""
         if self.ui.checkBox_debugOn.isChecked():
             cmdMSD = "cd .. & python %s %s --debug" % (pyfilepath, configFilePath)
