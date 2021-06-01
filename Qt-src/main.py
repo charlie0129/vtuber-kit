@@ -20,7 +20,8 @@ class myPhotoShooter(QWidget):
         super().__init__()
 
         self.timer = QtCore.QTimer()
-        self.cap = cv2.VideoCapture()  # 开启视频流
+        self.cap = cv2.VideoCapture()  # 摄像头视频流
+        self.CAM_MAX_NUM = 5
         self.CAM_NUM = 0  # 摄像头编号，0为默认
         self.faceOpenImage = None
         self.faceCloseImage = None
@@ -37,8 +38,24 @@ class myPhotoShooter(QWidget):
         self.ui.button_openCam.clicked.connect(self.start_camera)
         self.timer.timeout.connect(self.show_camera)
 
+        self.get_cam_num()
+
+    def get_cam_num(self):
+        # 通过遍历摄像头编号开启视频流，判断摄像头数量
+        cnt = 0
+        for device in range(0, self.CAM_MAX_NUM):
+            stream = cv2.VideoCapture(device)
+            grabbed = stream.grab()
+            stream.release()
+            if not grabbed:
+                break
+            cnt = cnt + 1
+        for i in range(cnt):
+            self.ui.comboBox.addItem("Camera %d" % i)
+
     def start_camera(self):
         if self.timer.isActive() == False:
+            self.CAM_NUM = int(self.ui.comboBox.currentIndex())
             openf = self.cap.open(self.CAM_NUM)
             if openf == False:
                 msg = QtWidgets.QMessageBox.warning(self, 'warning', "请检查摄像头是否启用", buttons=QtWidgets.QMessageBox.Ok)
@@ -57,7 +74,7 @@ class myPhotoShooter(QWidget):
         show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)  # 视频色彩转换回RGB
         showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0],
                                  QtGui.QImage.Format_RGB888)  # 把读取到的视频数据变成QImage形式
-        self.ui.camerashow.setPixmap(QtGui.QPixmap.fromImage(showImage))  # 往显示视频的Label里 显示QImage
+        self.ui.camerashow.setPixmap(QtGui.QPixmap.fromImage(showImage))  # 往显示视频的Label里显示QImage
 
     def shoot_photo(self):
         try:
@@ -162,8 +179,12 @@ class myMainForm(QMainWindow):
         elif self.vtb_thread.is_alive():
             isAlive = True
         if not isAlive:
-            self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
-            self.vtb_thread.start()
+            if self.chara_name is not None:
+                self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
+                self.vtb_thread.start()
+            else:
+                msg = QtWidgets.QMessageBox.warning(self, '无法启动', "未选中角色！", buttons=QtWidgets.QMessageBox.Ok)
+                return
         else:
             # TODO:关闭线程（调接口？）
             pass
