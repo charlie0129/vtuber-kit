@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     face_tracker.set_config_data(config_data)
 
-    while face_tracker.get_current_face_orientation() is None:
+    while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
 
     psd = PSDImage.open(config_data['psd_file_path'])

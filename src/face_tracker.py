@@ -95,6 +95,7 @@ def get_face_orientation_from_picture(img):
 
 
 face_orientation = None
+cam_img = None
 
 
 def camera_capture_loop():
@@ -238,6 +239,8 @@ def get_debug_camera_image():
 def get_current_face_orientation():
     return face_orientation
 
+def get_camera_image():
+    return cam_img
 
 def get_current_eye_size():
     size = int((current_eye_height - closed_eye_height) / eye_height_step)
