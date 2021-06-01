@@ -88,14 +88,14 @@ class myPhotoShooter(QWidget):
                                      QtGui.QImage.Format_RGB888)
             if self.user_step == 1:
                 self.ui.label_openImg.setPixmap(QtGui.QPixmap.fromImage(showImage))
-                saveImage.save("../assets/std_face_open.png", format="PNG")
+                saveImage.save("/assets/std_face_open.png", format="PNG")
                 self.user_step = 2
                 self.ui.label_step1.setTextFormat(Qt.RichText)
                 self.ui.label_step1.setText("<font color=\"#00FF00\">1.张开眼睛和嘴巴，点击拍摄照片</font>")
                 self.ui.button_back.setEnabled(True)
             elif self.user_step == 2:
                 self.ui.label_closeImg.setPixmap(QtGui.QPixmap.fromImage(showImage))
-                saveImage.save("../assets/std_face_closed.png", format="PNG")
+                saveImage.save("/assets/std_face_closed.png", format="PNG")
                 self.ui.label_step2.setTextFormat(Qt.RichText)
                 self.ui.label_step2.setText("<font color=\"#00FF00\">2.闭上眼睛和嘴巴，点击拍摄照片</font>")
                 self.user_step = 3
@@ -140,8 +140,9 @@ class myMainForm(QMainWindow):
     def scan_psd_files(self):
         self.ui.comboBox_chooseChara.disconnect()
         self.ui.comboBox_chooseChara.clear()
+        self.ui.comboBox_chooseChara.addItem("无")
         psd_file_paths = []
-        for roots, dirs, files in os.walk("../assets"):
+        for roots, dirs, files in os.walk("./assets"):
             for filename in files:
                 if filename.endswith("psd"):
                     psd_file_paths.append(filename)
@@ -152,8 +153,8 @@ class myMainForm(QMainWindow):
 
     def on_chara_choose(self):
         text = self.ui.comboBox_chooseChara.currentText()
-        if text is not None:
-            filename = "../assets/" + text
+        if text not in (None, "无"):
+            filename = "assets/" + text
             psd = PSDImage.open(filename + ".psd")
             if not os.path.exists(filename + ".png"):
                 psd.composite().save(filename + ".png")
@@ -161,6 +162,9 @@ class myMainForm(QMainWindow):
                 self.ui.Image_preview.width(), self.ui.Image_preview.height())
             self.ui.Image_preview.setPixmap(pixmap_chara)
             self.chara_name = text
+        else:
+            self.ui.Image_preview.setText("暂无预览")
+            self.chara_name = None
 
     def open_camera_capture(self):
         self.camWindow = myPhotoShooter()
@@ -193,18 +197,18 @@ class myMainForm(QMainWindow):
         pyfilepath = "src/character_renderer.py"
         configFilePath = "assets/sample_config.json"
 
-        config_file = open("../" + configFilePath, encoding="utf-8")
+        config_file = open(configFilePath, encoding="utf-8")
         config_data = json.load(config_file)
         config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
         config_file.close()
-        with open("../" + configFilePath, 'w') as f:
+        with open(configFilePath, 'w') as f:
             json.dump(config_data, f)
 
         cmdMSD = ""
         if self.ui.checkBox_debugOn.isChecked():
-            cmdMSD = "cd .. & python %s %s --debug" % (pyfilepath, configFilePath)
+            cmdMSD = "python %s %s --debug" % (pyfilepath, configFilePath)
         else:
-            cmdMSD = "cd .. & python %s %s" % (pyfilepath, configFilePath)
+            cmdMSD = "python %s %s" % (pyfilepath, configFilePath)
         p_res = os.popen(cmdMSD)
         print(p_res.read())
 
