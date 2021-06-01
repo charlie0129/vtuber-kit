@@ -61,11 +61,12 @@ class myPhotoShooter(QWidget):
                 msg = QtWidgets.QMessageBox.warning(self, 'warning', "请检查摄像头是否启用", buttons=QtWidgets.QMessageBox.Ok)
             else:
                 self.timer.start(30)  # 定时器开始计时30ms，结果是每过30ms从摄像头中取一帧显示
+                self.ui.button_openCam.setText("关闭摄像头")
                 self.user_step = 1
         else:
             self.timer.stop()
             self.cap.release()
-        self.ui.button_openCam.setEnabled(False)
+            self.ui.button_openCam.setText("打开摄像头")
 
     def show_camera(self):
         flag, self.image = self.cap.read()  # 从视频流中读取
@@ -118,6 +119,12 @@ class myPhotoShooter(QWidget):
             self.ui.label_closeImg.setText("睁眼动作图像")
             self.user_step = 2
             self.ui.button_confrim.setEnabled(False)
+
+    def closeEvent(self, event):
+        self.timer.stop()
+        self.cap.release()
+        event.accept()
+
 
 
 class myMainForm(QMainWindow):
