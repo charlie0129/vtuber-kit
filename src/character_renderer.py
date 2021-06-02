@@ -157,6 +157,9 @@ def gl_drawing_loop(all_layers, psd_size):
 def read_mode_from_voice_mode_file():
     global voice_mode_file, should_close_window_from_mode_file
 
+    if voice_mode_file == None:
+        return
+
     voice_mode_file.seek(0)
     file_content = voice_mode_file.read()
 
@@ -200,7 +203,7 @@ def manual_stop():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--config',
+    parser.add_argument('config',
                         type=dir_path,
                         help='path to the config file (json)')
 
@@ -219,11 +222,11 @@ if __name__ == '__main__':
     config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
     config_data['debug'] = args.debug
-
-    voice_mode_file = open(args.voice_mode_file, mode='rt', encoding='utf8')
-
     print('loaded config: ' + config_data['config_name'])
-    print('voice mode config: ' + args.voice_mode_file)
+
+    if args.voice_mode_file != None:
+        voice_mode_file = open(args.voice_mode_file, mode='rt', encoding='utf8')
+        print('voice mode config: ' + args.voice_mode_file)
 
     face_tracker.set_config_data(config_data)
 
