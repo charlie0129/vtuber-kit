@@ -33,9 +33,9 @@
     
 5. 使用合适的命令行参数来启动项目
 
-    1. `config`: 指定 `json` 配置文件路径*（必选）*
-    2. `--voice-mode-file`: 指定语音变声器配置文件路径*（可选）*
-    3. `--debug, -d`: 开启面部跟踪调试画面*（可选）*
+    1. `config`: 指定 `json` 配置文件路径（必选）
+    2. `--voice-mode-file`: 指定语音变声器配置文件路径（可选）
+    3. `--debug, -d`: 开启面部跟踪调试画面（可选）
 
     比如在项目***根目录***下运行样例可以这么操作： `python3 src/character_renderer.py assets/sample_config.json --voice-mode-file assets/voice_mode.txt` （你可以使用 `--debug` 参数来打开摄像头调试窗口）
 
