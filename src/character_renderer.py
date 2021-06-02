@@ -210,7 +210,7 @@ if __name__ == '__main__':
     parser.add_argument('--voice-mode-file',
                         type=dir_path,
                         dest='voice_mode_file',
-                        help='path to the voice config (txt)')
+                        help='path to the voice config file (txt)')
 
     parser.add_argument('-d', '--debug',
                         dest='debug',
