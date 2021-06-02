@@ -199,10 +199,21 @@ def manual_stop():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=dir_path, help='path to the config file (json)')
-    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+
+    parser.add_argument('--config',
+                        type=dir_path,
+                        help='path to the config file (json)')
+
+    parser.add_argument('--voice-mode-file',
+                        type=dir_path,
+                        dest='voice_mode_file',
+                        help='path to the voice config (txt)')
+
+    parser.add_argument('-d', '--debug',
+                        dest='debug',
+                        action='store_true',
                         help='toggle debug mode (show face landmarks)')
-    parser.add_argument('--voice-mode', type=dir_path, dest='voice_mode_file', help='path to the voice config (txt)')
+
     args = parser.parse_args()
 
     config_file = open(args.config, encoding='utf8')
