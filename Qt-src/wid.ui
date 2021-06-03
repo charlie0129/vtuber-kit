@@ -121,8 +121,8 @@
     <widget class="QLabel" name="label_voiceKind">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>60</y>
+       <x>60</x>
+       <y>90</y>
        <width>72</width>
        <height>15</height>
       </rect>
@@ -131,50 +131,11 @@
       <string>音色</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_volumn">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>110</y>
-       <width>72</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>音量</string>
-     </property>
-    </widget>
-    <widget class="QSlider" name="horizontalSlider">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>110</y>
-       <width>160</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_volumnNum">
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>110</y>
-       <width>72</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_testMic">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>150</y>
+       <x>60</x>
+       <y>140</y>
        <width>93</width>
        <height>28</height>
       </rect>
@@ -186,11 +147,33 @@
     <widget class="QComboBox" name="comboBox_vc">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>60</y>
+       <x>140</x>
+       <y>81</y>
        <width>121</width>
-       <height>22</height>
+       <height>31</height>
       </rect>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <property name="currentText">
+      <string/>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_enableVC">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>281</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>启用变声器</string>
      </property>
     </widget>
    </widget>
@@ -210,10 +193,10 @@
    <widget class="QLabel" name="Image_preview">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>50</y>
-      <width>211</width>
-      <height>241</height>
+      <x>560</x>
+      <y>70</y>
+      <width>301</width>
+      <height>371</height>
      </rect>
     </property>
     <property name="text">
@@ -223,7 +206,7 @@
    <widget class="QPushButton" name="pushButton_start">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>500</y>
       <width>181</width>
       <height>51</height>

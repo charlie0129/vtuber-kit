@@ -11,6 +11,7 @@ from psd_tools import PSDImage
 
 from wid import Ui_MainWindow
 from camWid import Ui_Form as Cam_Ui_Form
+import src.character_renderer as CR
 
 
 class myPhotoShooter(QWidget):
@@ -62,6 +63,7 @@ class myPhotoShooter(QWidget):
             else:
                 self.timer.start(30)  # 定时器开始计时30ms，结果是每过30ms从摄像头中取一帧显示
                 self.ui.button_openCam.setText("关闭摄像头")
+                self.ui.camerashow.setText("【摄像头未启用】")
                 self.user_step = 1
         else:
             self.timer.stop()
@@ -126,7 +128,6 @@ class myPhotoShooter(QWidget):
         event.accept()
 
 
-
 class myMainForm(QMainWindow):
     def __init__(self):
         # 调用父类构造函数，初始化空窗口
@@ -139,10 +140,29 @@ class myMainForm(QMainWindow):
         self.chara_name = None
         self.camWindow = None
         self.vtb_thread = None
+        self.vc_thread = None
+        self.is_vtbAlive = False
+        self.CRfilepath = "src/character_renderer.py"
+        self.configFilePath = "assets/sample_config.json"
+        self.vc_configFilePath = "assets/type.txt"
 
         self.ui.pushButton_shootPhoto.clicked.connect(self.open_camera_capture)
         self.ui.pushButton_start.clicked.connect(self.start_vtb)
         self.ui.pushButton_choosePsd.clicked.connect(self.scan_psd_files)
+        self.initVCcomboBox()
+        self.ui.comboBox_vc.currentIndexChanged.connect(self.on_voiceKind_Changed)
+        self.ui.pushButton_testMic.clicked.connect(self.test_mic)
+
+    def initVCcomboBox(self):
+        voice_texts = ["正常",
+                       "萝莉",
+                       "大叔",
+                       "惊悚",
+                       "搞怪",
+                       "电音",
+                       "回声",
+                       "颤音"]
+        self.ui.comboBox_vc.addItems(voice_texts)
 
     def scan_psd_files(self):
         self.ui.comboBox_chooseChara.disconnect()
@@ -183,41 +203,66 @@ class myMainForm(QMainWindow):
         self.ui.checkBox_finish.setText("已完成")
         self.camWindow.close()
 
+    def on_voiceKind_Changed(self):
+
+        vc_configFile = open(self.vc_configFilePath, "w")
+        vc_configFile.writelines(str(self.ui.comboBox_vc.currentIndex()))
+        vc_configFile.close()
+
+    def test_mic(self):
+        pass
+
+    def start_voiceChangeThreadFunc(self):
+        try:
+            p_res = os.popen("cd assets/ & start Sound.exe")
+            print(p_res)
+
+            vc_configFile = open(self.vc_configFilePath, "w")
+            vc_configFile.writelines(str(self.ui.comboBox_vc.currentIndex()))
+            vc_configFile.close()
+
+        except Exception as e:
+            print(e)
+
+    def start_vtbThreadFunc(self):
+        config_file = open(self.configFilePath, encoding="utf-8")
+        config_data = json.load(config_file)
+        config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
+        config_file.close()
+        with open(self.configFilePath, 'w',encoding="utf-8") as f:
+            json.dump(config_data, f, indent=2, ensure_ascii=False)
+
+        CR.manual_start(config_data, self.ui.checkBox_debugOn.isChecked())
+
+
     def start_vtb(self):
-        isAlive = False
+        print("main: %d" % os.getpid())
+        isEnableVC = self.ui.checkBox_enableVC.isChecked()
         if self.vtb_thread is None:
-            isAlive = False
-        elif self.vtb_thread.is_alive():
-            isAlive = True
-        if not isAlive:
+            self.is_vtbAlive = False
+        else:
+            self.is_vtbAlive = self.vtb_thread.is_alive()
+
+        if not self.is_vtbAlive:
             if self.chara_name is not None:
                 self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
                 self.vtb_thread.start()
+                if isEnableVC:
+                    self.vc_thread = Thread(target=self.start_voiceChangeThreadFunc)
+                    self.vc_thread.start()
+                self.ui.pushButton_start.setText("停止")
             else:
                 msg = QtWidgets.QMessageBox.warning(self, '无法启动', "未选中角色！", buttons=QtWidgets.QMessageBox.Ok)
                 return
         else:
-            # TODO:关闭线程（调接口？）
-            pass
+            vc_configFile = open(self.vc_configFilePath, "w")
+            vc_configFile.writelines("-1")
+            vc_configFile.close()
 
-    def start_vtbThreadFunc(self):
-        pyfilepath = "src/character_renderer.py"
-        configFilePath = "assets/sample_config.json"
-
-        config_file = open(configFilePath, encoding="utf-8")
-        config_data = json.load(config_file)
-        config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
-        config_file.close()
-        with open(configFilePath, 'w') as f:
-            json.dump(config_data, f)
-
-        cmdMSD = ""
-        if self.ui.checkBox_debugOn.isChecked():
-            cmdMSD = "python %s %s --debug" % (pyfilepath, configFilePath)
-        else:
-            cmdMSD = "python %s %s" % (pyfilepath, configFilePath)
-        p_res = os.popen(cmdMSD)
-        print(p_res.read())
+            # 结束vtb渲染
+            CR.manual_stop()
+            self.vtb_thread.join()
+            self.ui.pushButton_start.setText("启动！")
 
 
 if __name__ == '__main__':

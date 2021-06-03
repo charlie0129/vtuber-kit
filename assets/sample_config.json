@@ -1,1 +1,75 @@
-{"config_name": "\u6c34\u7d50\u69d8_sample", "face_landmarks_path": "assets/shape_predictor_68_face_landmarks.dat", "psd_file_path": "assets/\u7a7a\u8272\u308c\u3093\u6c34\u7d50\u69d8\u7c21\u7565\u7248.psd", "psd_eye_layers": ["\u8868\u60c5\u4e0a/\u76ee/0", "\u8868\u60c5\u4e0a/\u76ee/1", "\u8868\u60c5\u4e0a/\u76ee/2", "\u8868\u60c5\u4e0a/\u76ee/3", "\u8868\u60c5\u4e0a/\u76ee/4"], "psd_mouth_layers": ["\u8868\u60c5\u4e0a/\u53e3/0", "\u8868\u60c5\u4e0a/\u53e3/1", "\u8868\u60c5\u4e0a/\u53e3/2", "\u8868\u60c5\u4e0a/\u53e3/3"], "psd_eye_layer_prefix": "\u8868\u60c5\u4e0a/\u76ee/", "psd_mouth_layer_prefix": "\u8868\u60c5\u4e0a/\u53e3/", "psd_eye_layer_suffix": "%d", "psd_mouth_layer_suffix": "%d", "psd_body_layer_name": "\u8eab\u4f53\u57fa\u672c/\u4f53", "psd_layer_depths": {"\u8868\u60c5\u4e0a/\u9f3b/0": 0.62, "\u8868\u60c5\u4e0a/\u7709/1": 0.65, "\u8868\u60c5\u4e0a/\u76ee/0": 0.68, "\u8868\u60c5\u4e0a/\u76ee/1": 0.68, "\u8868\u60c5\u4e0a/\u76ee/2": 0.68, "\u8868\u60c5\u4e0a/\u76ee/3": 0.68, "\u8868\u60c5\u4e0a/\u76ee/4": 0.68, "\u8868\u60c5\u4e0a/\u53e3/0": 0.65, "\u8868\u60c5\u4e0a/\u53e3/1": 0.65, "\u8868\u60c5\u4e0a/\u53e3/2": 0.65, "\u8868\u60c5\u4e0a/\u53e3/3": 0.65, "\u8868\u60c5\u4e0a/\u30c1\u30fc\u30af/0": 0.65, "\u8eab\u4f53\u57fa\u672c/\u9aea\u98fe\u308a": 0.65, "\u8eab\u4f53\u57fa\u672c/\u982d\u3072\u3082\u30ea\u30dc\u30f3": 0.7, "\u8eab\u4f53\u57fa\u672c/\u524d\u9aea": 0.65, "\u8eab\u4f53\u57fa\u672c/\u982d\u30ea\u30dc\u30f3": 0.7, "\u8eab\u4f53\u57fa\u672c/\u9762": 0.7, "\u8eab\u4f53\u57fa\u672c/\u8033": [[0.65, 0.65], [0.75, 0.75]], "\u8eab\u4f53\u57fa\u672c/\u4f53": 0.7, "\u8eab\u4f53\u57fa\u672c/\u9aea": [[0.7, 0.7], [0.9, 0.9]]}, "std_face_open_image_path": "assets/std_face_open.png", "std_face_closed_image_path": "assets/std_face_closed.png", "camera_path": 0, "motion_buffer_strength": 0.95, "renderer_window_size": [800, 800], "renderer_window_position_offset": [0, 280]}
+{
+  "config_name": "水結様_sample",
+  "face_landmarks_path": "assets/shape_predictor_68_face_landmarks.dat",
+  "psd_file_path": "assets/空色れん水結様簡略版.psd",
+  "psd_eye_layers": [
+    "表情上/目/0",
+    "表情上/目/1",
+    "表情上/目/2",
+    "表情上/目/3",
+    "表情上/目/4"
+  ],
+  "psd_mouth_layers": [
+    "表情上/口/0",
+    "表情上/口/1",
+    "表情上/口/2",
+    "表情上/口/3"
+  ],
+  "psd_eye_layer_prefix": "表情上/目/",
+  "psd_mouth_layer_prefix": "表情上/口/",
+  "psd_eye_layer_suffix": "%d",
+  "psd_mouth_layer_suffix": "%d",
+  "psd_body_layer_name": "身体基本/体",
+  "psd_layer_depths": {
+    "表情上/鼻/0": 0.62,
+    "表情上/眉/1": 0.65,
+    "表情上/目/0": 0.68,
+    "表情上/目/1": 0.68,
+    "表情上/目/2": 0.68,
+    "表情上/目/3": 0.68,
+    "表情上/目/4": 0.68,
+    "表情上/口/0": 0.65,
+    "表情上/口/1": 0.65,
+    "表情上/口/2": 0.65,
+    "表情上/口/3": 0.65,
+    "表情上/チーク/0": 0.65,
+    "身体基本/髪飾り": 0.65,
+    "身体基本/頭ひもリボン": 0.7,
+    "身体基本/前髪": 0.65,
+    "身体基本/頭リボン": 0.7,
+    "身体基本/面": 0.7,
+    "身体基本/耳": [
+      [
+        0.65,
+        0.65
+      ],
+      [
+        0.75,
+        0.75
+      ]
+    ],
+    "身体基本/体": 0.7,
+    "身体基本/髪": [
+      [
+        0.7,
+        0.7
+      ],
+      [
+        0.9,
+        0.9
+      ]
+    ]
+  },
+  "std_face_open_image_path": "assets/std_face_open.png",
+  "std_face_closed_image_path": "assets/std_face_closed.png",
+  "camera_path": 0,
+  "motion_buffer_strength": 0.95,
+  "renderer_window_size": [
+    800,
+    800
+  ],
+  "renderer_window_position_offset": [
+    0,
+    280
+  ]
+}
