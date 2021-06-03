@@ -145,6 +145,7 @@ class myMainForm(QMainWindow):
         self.vtb_thread = None
         self.vc_thread = None
         self.is_vtbAlive = False
+        self.is_photo_shooted = False
         self.CRfilepath = "src/character_renderer.py"
         self.configFilePath = "assets/sample_config.json"
         self.vc_configFilePath = "assets/type.txt"
@@ -155,6 +156,7 @@ class myMainForm(QMainWindow):
         self.initVCcomboBox()
         self.ui.comboBox_vc.currentIndexChanged.connect(self.on_voiceKind_Changed)
         self.ui.pushButton_testMic.clicked.connect(self.test_mic)
+        self.checkPhotoShoot()
 
     def initVCcomboBox(self):
         voice_texts = ["正常",
@@ -166,6 +168,18 @@ class myMainForm(QMainWindow):
                        "回声",
                        "颤音"]
         self.ui.comboBox_vc.addItems(voice_texts)
+
+
+    def checkPhotoShoot(self):
+        for roots, dirs, files in os.walk("./assets"):
+            photo1 = "std_face_closed.png"
+            photo2 = "std_face_open.png"
+            if photo1 in files and photo2 in files:
+                print("fin")
+                self.ui.checkBox_finish.setChecked(True)
+                self.ui.checkBox_finish.setText("已完成")
+                self.is_photo_shooted = True
+
 
     def scan_psd_files(self):
         self.ui.comboBox_chooseChara.disconnect()
@@ -204,6 +218,7 @@ class myMainForm(QMainWindow):
     def updateCaptureChecked(self):
         self.ui.checkBox_finish.setChecked(True)
         self.ui.checkBox_finish.setText("已完成")
+        self.is_photo_shooted = True
         self.camWindow.close()
 
     def on_voiceKind_Changed(self):
@@ -237,7 +252,6 @@ class myMainForm(QMainWindow):
 
         CR.manual_start(config_data, self.ui.checkBox_debugOn.isChecked())
 
-
     def start_vtb(self):
         print("main: %d" % os.getpid())
         isEnableVC = self.ui.checkBox_enableVC.isChecked()
@@ -248,12 +262,17 @@ class myMainForm(QMainWindow):
 
         if not self.is_vtbAlive:
             if self.chara_name is not None:
-                self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
-                self.vtb_thread.start()
-                if isEnableVC:
-                    self.vc_thread = Thread(target=self.start_voiceChangeThreadFunc)
-                    self.vc_thread.start()
-                self.ui.pushButton_start.setText("停止")
+                if self.is_photo_shooted:
+                    self.vtb_thread = Thread(target=self.start_vtbThreadFunc)
+                    self.vtb_thread.start()
+                    if isEnableVC:
+                        self.vc_thread = Thread(target=self.start_voiceChangeThreadFunc)
+                        self.vc_thread.start()
+                    self.ui.pushButton_start.setText("停止")
+                    self.setEnvButtons(False)
+                else:
+                    msg = QtWidgets.QMessageBox.warning(self, '无法启动', "动作采集未完成！", buttons=QtWidgets.QMessageBox.Ok)
+                    return
             else:
                 msg = QtWidgets.QMessageBox.warning(self, '无法启动', "未选中角色！", buttons=QtWidgets.QMessageBox.Ok)
                 return
@@ -266,6 +285,15 @@ class myMainForm(QMainWindow):
             CR.manual_stop()
             self.vtb_thread.join()
             self.ui.pushButton_start.setText("启动！")
+            self.setEnvButtons(True)
+
+    def setEnvButtons(self, bool):
+        self.ui.pushButton_choosePsd.setEnabled(bool)
+        self.ui.comboBox_chooseChara.setEnabled(bool)
+        self.ui.pushButton_shootPhoto.setEnabled(bool)
+        self.ui.checkBox_enableVC.setEnabled(bool)
+        self.ui.checkBox_debugOn.setEnabled(bool)
+        self.ui.pushButton_testMic.setEnabled(bool)
 
 
 if __name__ == '__main__':
