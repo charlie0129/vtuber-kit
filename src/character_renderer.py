@@ -1,4 +1,5 @@
 import time
+import datetime
 import math
 
 import numpy as np
@@ -206,6 +207,26 @@ def manual_stop():
     should_close_window = True
 
 
+class Colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class ConsoleTextHeaders:
+    INFO = '[' + Colors.OKBLUE + 'INFO' + Colors.ENDC + '] '
+
+
+def print_logging_info(string):
+    print(str(datetime.datetime.now().time()) + ' ' + ConsoleTextHeaders.INFO + string)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -220,22 +241,44 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.debug:
+        print_logging_info('debug mode is ON')
+        global face_tracker_initialize_time, psd_load_time
+
     config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
     config_file.close()
+
     config_data['debug'] = args.debug
-    if args.debug:
-        print('[INFO] debug ON')
-    print('[INFO] loaded config: ' + config_data['config_name'])
+
+    print_logging_info('loaded config: ' + config_data['config_name'])
 
     face_tracker.set_config_data(config_data)
 
+    if args.debug:
+        print_logging_info('initializing face tracker...')
+        face_tracker_initialize_time = time.time()
+
     while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
+
+    if args.debug:
+        face_tracker_initialize_time = time.time() - face_tracker_initialize_time
+        print_logging_info('face tracker initialized in ' + '%.0fms' % (face_tracker_initialize_time * 1000))
+
+    if args.debug:
+        print_logging_info('loading PSD file...')
+        psd_load_time = time.time()
 
     psd = PSDImage.open(config_data['psd_file_path'])
 
     all_layers, size = extract_layers_from_psd(psd)
     add_depth_to_layers(all_layers)
+
+    if args.debug:
+        psd_load_time = time.time() - psd_load_time
+        print_logging_info('PSD file loaded in ' + '%.0fms' % (psd_load_time * 1000))
+        print_logging_info('OpenGL drawing will start NOW...')
+
     gl_drawing_loop(all_layers, size)
     exit(0)
