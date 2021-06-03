@@ -11,7 +11,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
 from psd_tools import PSDImage
 
-from wid import Ui_MainWindow
+from wid import Ui_VtbKit
 from camWid import Ui_Form as Cam_Ui_Form
 import src.character_renderer as CR
 
@@ -136,7 +136,7 @@ class myMainForm(QMainWindow):
         # 调用父类构造函数，初始化空窗口
         super().__init__()
         # 使用ui文件导入定义界面类
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_VtbKit()
         # 初始化界面
         self.ui.setupUi(self)
 
