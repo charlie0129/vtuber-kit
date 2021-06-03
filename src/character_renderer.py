@@ -3,6 +3,7 @@ import math
 
 import numpy as np
 import os
+import sys
 import argparse
 import json
 import glfw
@@ -11,13 +12,16 @@ from OpenGL.GL import *
 
 from psd_tools import PSDImage
 
+path = os.getcwd()
+sys.path.append(path)
+
 import src.face_tracker as face_tracker
 import src.matrix as matrix
 
 config_data = {}
 
 voice_mode_file = None
-should_close_window_from_mode_file = False
+should_close_window = False
 
 
 def extract_layers_from_psd(psd):
@@ -101,7 +105,7 @@ def gl_drawing_loop(all_layers, psd_size):
         layer['layer_id'] = texture_id
         layer['texture_location'] = texture_location
 
-    while not (glfw.window_should_close(window) or should_close_window_from_mode_file):
+    while not (glfw.window_should_close(window) or should_close_window):
         read_mode_from_voice_mode_file()
         glfw.poll_events()
         glClearColor(0, 0, 0, 0)
@@ -155,7 +159,7 @@ def gl_drawing_loop(all_layers, psd_size):
 
 
 def read_mode_from_voice_mode_file():
-    global voice_mode_file, should_close_window_from_mode_file
+    global voice_mode_file, should_close_window
 
     if voice_mode_file == None:
         return
@@ -164,7 +168,7 @@ def read_mode_from_voice_mode_file():
     file_content = voice_mode_file.read()
 
     if file_content == '-1':
-        should_close_window_from_mode_file = True
+        should_close_window = True
 
 
 def dir_path(string):
@@ -174,12 +178,12 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 
-def manual_start(_config_data, is_debug_enabled):
+def manual_start(_config_data_, is_debug_enabled=False):
     global config_data
-    global should_close_window_from_mode_file
-    should_close_window_from_mode_file = False
+    global should_close_window
+    should_close_window = False
 
-    config_data = _config_data
+    config_data = _config_data_
     config_data['debug'] = is_debug_enabled
 
     print('loaded config: ' + config_data['config_name'])
@@ -196,9 +200,10 @@ def manual_start(_config_data, is_debug_enabled):
     add_depth_to_layers(all_layers)
     gl_drawing_loop(all_layers, size)
 
+
 def manual_stop():
-    global should_close_window_from_mode_file
-    should_close_window_from_mode_file = True
+    global should_close_window
+    should_close_window = True
 
 
 if __name__ == '__main__':
@@ -207,11 +212,6 @@ if __name__ == '__main__':
     parser.add_argument('config',
                         type=dir_path,
                         help='path to the config file (json)')
-
-    parser.add_argument('--voice-mode-file',
-                        type=dir_path,
-                        dest='voice_mode_file',
-                        help='path to the voice config file (txt)')
 
     parser.add_argument('-d', '--debug',
                         dest='debug',
@@ -222,12 +222,11 @@ if __name__ == '__main__':
 
     config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
+    config_file.close()
     config_data['debug'] = args.debug
-    print('loaded config: ' + config_data['config_name'])
-
-    if args.voice_mode_file != None:
-        voice_mode_file = open(args.voice_mode_file, mode='rt', encoding='utf8')
-        print('voice mode config: ' + args.voice_mode_file)
+    if args.debug:
+        print('[INFO] debug ON')
+    print('[INFO] loaded config: ' + config_data['config_name'])
 
     face_tracker.set_config_data(config_data)
 
@@ -239,6 +238,4 @@ if __name__ == '__main__':
     all_layers, size = extract_layers_from_psd(psd)
     add_depth_to_layers(all_layers)
     gl_drawing_loop(all_layers, size)
-    config_file.close()
-    voice_mode_file.close()
     exit(0)
