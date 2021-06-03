@@ -11,8 +11,8 @@ from OpenGL.GL import *
 
 from psd_tools import PSDImage
 
-import face_tracker
-import matrix
+import src.face_tracker as face_tracker
+import src.matrix as matrix
 
 config_data = {}
 
@@ -174,18 +174,19 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 
-def manual_start(config_path):
-    global config_file
+def manual_start(_config_data, is_debug_enabled):
     global config_data
-    config_file = open(config_path)
-    config_data = json.load(config_file)
-    config_data['debug'] = args.debug
+    global should_close_window_from_mode_file
+    should_close_window_from_mode_file = False
+
+    config_data = _config_data
+    config_data['debug'] = is_debug_enabled
 
     print('loaded config: ' + config_data['config_name'])
 
     face_tracker.set_config_data(config_data)
 
-    while face_tracker.get_current_face_orientation() is None:
+    while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
 
     global psd, all_layers, size
@@ -195,9 +196,9 @@ def manual_start(config_path):
     add_depth_to_layers(all_layers)
     gl_drawing_loop(all_layers, size)
 
-
 def manual_stop():
-    exit(0)
+    global should_close_window_from_mode_file
+    should_close_window_from_mode_file = True
 
 
 if __name__ == '__main__':
