@@ -1,4 +1,3 @@
-import logging
 import threading
 import time
 
@@ -8,6 +7,8 @@ import dlib
 from itertools import chain
 
 config_data = {}
+
+should_face_tracking_be_paused = False
 
 detector = dlib.get_frontal_face_detector()
 
@@ -125,7 +126,6 @@ def camera_capture_loop():
     mouth_height_step = (open_mouth_height - closed_mouth_height) / (len(config_data['psd_mouth_layers']) - 1)
 
     cap = cv2.VideoCapture(config_data['camera_path'])
-    logging.info('Face capture has started...')
     while True:
         global cam_img
         ret, cam_img = cap.read()
@@ -134,7 +134,6 @@ def camera_capture_loop():
         current_mouth_height = mouth_height
         if new_face_orientation is not None:
             face_orientation = new_face_orientation - reference_face_orientation
-        time.sleep(1 / 60)
 
 
 def debug_draw_line(img, start_point_idx, end_point_idx, color):
@@ -239,8 +238,10 @@ def get_debug_camera_image():
 def get_current_face_orientation():
     return face_orientation
 
+
 def get_camera_image():
     return cam_img
+
 
 def get_current_eye_size():
     size = int((current_eye_height - closed_eye_height) / eye_height_step)
