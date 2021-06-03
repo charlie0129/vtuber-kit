@@ -191,6 +191,8 @@ def manual_start(_config_data_, is_debug_enabled=False):
 
     face_tracker.set_config_data(config_data)
 
+    face_tracker.resume_face_tracker()
+
     while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
 
@@ -205,6 +207,7 @@ def manual_start(_config_data_, is_debug_enabled=False):
 def manual_stop():
     global should_close_window
     should_close_window = True
+    face_tracker.pause_face_tracker()
 
 
 class Colors:

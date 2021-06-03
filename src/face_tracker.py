@@ -127,6 +127,10 @@ def camera_capture_loop():
 
     cap = cv2.VideoCapture(config_data['camera_path'])
     while True:
+        if should_face_tracking_be_paused:
+            time.sleep(0.2)
+            return
+
         global cam_img
         ret, cam_img = cap.read()
         new_face_orientation = get_face_orientation_from_picture(cam_img)
@@ -253,6 +257,16 @@ def get_current_mouth_size():
     size = int((current_mouth_height - closed_mouth_height) / mouth_height_step)
     size = size if size < len(config_data['psd_mouth_layers']) else len(config_data['psd_mouth_layers']) - 1
     return size if size >= 0 else 0
+
+
+def pause_face_tracker():
+    global should_face_tracking_be_paused
+    should_face_tracking_be_paused = True
+
+
+def resume_face_tracker():
+    global should_face_tracking_be_paused
+    should_face_tracking_be_paused = False
 
 
 t = threading.Thread(target=camera_capture_loop)
