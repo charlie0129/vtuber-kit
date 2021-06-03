@@ -16,6 +16,9 @@ import matrix
 
 config_data = {}
 
+voice_mode_file = None
+should_close_window_from_mode_file = False
+
 
 def extract_layers_from_psd(psd):
     all_layers = []
@@ -98,7 +101,8 @@ def gl_drawing_loop(all_layers, psd_size):
         layer['layer_id'] = texture_id
         layer['texture_location'] = texture_location
 
-    while not glfw.window_should_close(window):
+    while not (glfw.window_should_close(window) or should_close_window_from_mode_file):
+        read_mode_from_voice_mode_file()
         glfw.poll_events()
         glClearColor(0, 0, 0, 0)
         glClear(GL_COLOR_BUFFER_BIT)
@@ -150,6 +154,19 @@ def gl_drawing_loop(all_layers, psd_size):
             cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
 
 
+def read_mode_from_voice_mode_file():
+    global voice_mode_file, should_close_window_from_mode_file
+
+    if voice_mode_file == None:
+        return
+
+    voice_mode_file.seek(0)
+    file_content = voice_mode_file.read()
+
+    if file_content == '-1':
+        should_close_window_from_mode_file = True
+
+
 def dir_path(string):
     if os.path.isfile(string):
         return string
@@ -185,16 +202,31 @@ def manual_stop():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('config', type=dir_path, help='path to the config file (json)')
-    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+
+    parser.add_argument('config',
+                        type=dir_path,
+                        help='path to the config file (json)')
+
+    parser.add_argument('--voice-mode-file',
+                        type=dir_path,
+                        dest='voice_mode_file',
+                        help='path to the voice config file (txt)')
+
+    parser.add_argument('-d', '--debug',
+                        dest='debug',
+                        action='store_true',
                         help='toggle debug mode (show face landmarks)')
+
     args = parser.parse_args()
 
     config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
     config_data['debug'] = args.debug
-
     print('loaded config: ' + config_data['config_name'])
+
+    if args.voice_mode_file != None:
+        voice_mode_file = open(args.voice_mode_file, mode='rt', encoding='utf8')
+        print('voice mode config: ' + args.voice_mode_file)
 
     face_tracker.set_config_data(config_data)
 
@@ -206,3 +238,6 @@ if __name__ == '__main__':
     all_layers, size = extract_layers_from_psd(psd)
     add_depth_to_layers(all_layers)
     gl_drawing_loop(all_layers, size)
+    config_file.close()
+    voice_mode_file.close()
+    exit(0)
