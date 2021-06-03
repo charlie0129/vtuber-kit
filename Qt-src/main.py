@@ -1,6 +1,8 @@
 import json
-import os
 from threading import Thread
+import os, sys
+path = os.getcwd()
+sys.path.append(path)
 
 import cv2
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -40,6 +42,7 @@ class myPhotoShooter(QWidget):
         self.timer.timeout.connect(self.show_camera)
 
         self.get_cam_num()
+        # TODO：检测照片采集是否已经完成
 
     def get_cam_num(self):
         # 通过遍历摄像头编号开启视频流，判断摄像头数量
@@ -72,12 +75,13 @@ class myPhotoShooter(QWidget):
 
     def show_camera(self):
         flag, self.image = self.cap.read()  # 从视频流中读取
-
-        show = cv2.resize(self.image, (640, 480))  # 把读到的帧的大小重新设置为 640x480
+        show = self.image
+        #show = cv2.resize(self.image, (640, 480))  # 把读到的帧的大小重新设置为 640x480
         show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)  # 视频色彩转换回RGB
         showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0],
                                  QtGui.QImage.Format_RGB888)  # 把读取到的视频数据变成QImage形式
-        self.ui.camerashow.setPixmap(QtGui.QPixmap.fromImage(showImage))  # 往显示视频的Label里显示QImage
+        self.ui.camerashow.setPixmap(QtGui.QPixmap.fromImage(showImage).scaled(
+            640, 480, aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatioByExpanding))  # 往显示视频的Label里显示QImage
 
     def shoot_photo(self):
         try:
@@ -126,7 +130,6 @@ class myPhotoShooter(QWidget):
         self.timer.stop()
         self.cap.release()
         event.accept()
-
 
 class myMainForm(QMainWindow):
     def __init__(self):
@@ -268,5 +271,12 @@ class myMainForm(QMainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     wid = myMainForm()
+
+    styleFile = "Qt-src/qss/MacOS.qss"
+    f = open(styleFile,'r')
+    qssStyle = f.read()
+    f.close()
+    wid.setStyleSheet(qssStyle)
+
     wid.show()
     app.exec_()
