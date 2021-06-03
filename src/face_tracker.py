@@ -1,7 +1,9 @@
 import threading
 import time
-
+import argparse
 import cv2
+import json
+import os
 import numpy as np
 import dlib
 from itertools import chain
@@ -273,6 +275,32 @@ t = threading.Thread(target=camera_capture_loop)
 t.setDaemon(True)
 t.start()
 
+
+def dir_path(string):
+    if os.path.isfile(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+
+
 if __name__ == '__main__':
-    while True:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('config',
+                        type=dir_path,
+                        help='path to the config file (json)')
+
+    args = parser.parse_args()
+
+    config_file = open(args.config, encoding='utf8')
+    config_data = json.load(config_file)
+    config_file.close()
+
+    config_data['debug'] = True
+
+    while get_camera_image() is None:
         time.sleep(0.1)
+
+    while True:
+        cv2.imshow("Camera Debug", get_debug_camera_image())
+        cv2.waitKey(1)
