@@ -1,3 +1,4 @@
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -137,3 +138,5 @@ dmypy.json
 *.zip
 .DS_Store
 type.txt
+
+!*/screen_shot_*.jpg
