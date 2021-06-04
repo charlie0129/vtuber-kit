@@ -7,7 +7,7 @@ sys.path.append(path)
 
 import cv2
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
 from psd_tools import PSDImage
@@ -308,6 +308,11 @@ class myMainForm(QMainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     wid = myMainForm()
+
+    id = QFontDatabase.addApplicationFont("assets/Aa20.ttf")
+    fontstr = QFontDatabase.applicationFontFamilies(id)[0]
+    font = QFont(fontstr, 8)
+    app.setFont(font)
 
     qssStyle = QSSHelper.LoadQSSFile()
     wid.setStyleSheet(qssStyle)
