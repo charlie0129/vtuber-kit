@@ -136,3 +136,4 @@ dmypy.json
 *.psd
 *.zip
 .DS_Store
+type.txt
