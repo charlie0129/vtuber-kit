@@ -1,8 +1,10 @@
 import time
+import datetime
 import math
 
 import numpy as np
 import os
+import sys
 import argparse
 import json
 import glfw
@@ -11,13 +13,17 @@ from OpenGL.GL import *
 
 from psd_tools import PSDImage
 
+path = os.getcwd()
+sys.path.append(path)
+
 import src.face_tracker as face_tracker
 import src.matrix as matrix
 
 config_data = {}
 
 voice_mode_file = None
-should_close_window_from_mode_file = False
+should_close_window = False
+is_first_run = True
 
 
 def extract_layers_from_psd(psd):
@@ -101,8 +107,7 @@ def gl_drawing_loop(all_layers, psd_size):
         layer['layer_id'] = texture_id
         layer['texture_location'] = texture_location
 
-    while not (glfw.window_should_close(window) or should_close_window_from_mode_file):
-        read_mode_from_voice_mode_file()
+    while not (glfw.window_should_close(window) or should_close_window):
         glfw.poll_events()
         glClearColor(0, 0, 0, 0)
         glClear(GL_COLOR_BUFFER_BIT)
@@ -153,18 +158,8 @@ def gl_drawing_loop(all_layers, psd_size):
         if config_data['debug']:
             cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
 
-
-def read_mode_from_voice_mode_file():
-    global voice_mode_file, should_close_window_from_mode_file
-
-    if voice_mode_file == None:
-        return
-
-    voice_mode_file.seek(0)
-    file_content = voice_mode_file.read()
-
-    if file_content == '-1':
-        should_close_window_from_mode_file = True
+    glfw.destroy_window(window)
+    cv2.destroyWindow("Camera Debug")
 
 
 def dir_path(string):
@@ -174,31 +169,84 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 
-def manual_start(_config_data, is_debug_enabled):
+def manual_start(_config_data_, is_debug_enabled=False):
     global config_data
-    global should_close_window_from_mode_file
-    should_close_window_from_mode_file = False
+    global should_close_window
+    global is_first_run
+    should_close_window = False
 
-    config_data = _config_data
+    config_data = _config_data_
     config_data['debug'] = is_debug_enabled
 
-    print('loaded config: ' + config_data['config_name'])
+    if not is_first_run:
+        print_logging_info('face tracker and renderer has been resumed')
 
-    face_tracker.set_config_data(config_data)
+    if is_debug_enabled:
+        print_logging_info('debug mode is ON')
+        global face_tracker_initialize_time, psd_load_time
+
+    print_logging_info('loaded config: ' + config_data['config_name'])
+
+    if is_debug_enabled:
+        print_logging_info('initializing face tracker...')
+        face_tracker_initialize_time = time.time()
+
+    if is_first_run:
+        face_tracker.set_config_data(config_data)
+
+    face_tracker.resume_face_tracker()
 
     while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
 
-    global psd, all_layers, size
-    psd = PSDImage.open(config_data['psd_file_path'])
+    if is_debug_enabled:
+        face_tracker_initialize_time = time.time() - face_tracker_initialize_time
+        print_logging_info('face tracker initialized in ' + '%.0fms' % (face_tracker_initialize_time * 1000))
 
-    all_layers, size = extract_layers_from_psd(psd)
-    add_depth_to_layers(all_layers)
+    if is_debug_enabled:
+        print_logging_info('loading PSD file...')
+        psd_load_time = time.time()
+
+    if is_first_run:
+        global psd, all_layers, size
+        psd = PSDImage.open(config_data['psd_file_path'])
+        all_layers, size = extract_layers_from_psd(psd)
+        add_depth_to_layers(all_layers)
+
+    if is_debug_enabled:
+        psd_load_time = time.time() - psd_load_time
+        print_logging_info('PSD file loaded in ' + '%.0fms' % (psd_load_time * 1000))
+        print_logging_info('OpenGL drawing will start NOW...')
+
     gl_drawing_loop(all_layers, size)
+    is_first_run = False
+
 
 def manual_stop():
-    global should_close_window_from_mode_file
-    should_close_window_from_mode_file = True
+    global should_close_window
+    should_close_window = True
+    face_tracker.pause_face_tracker()
+    print_logging_info('face tracker and renderer has been stopped or paused')
+
+
+class Colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class ConsoleTextHeaders:
+    INFO = '[' + Colors.OKBLUE + 'INFO' + Colors.ENDC + '] '
+
+
+def print_logging_info(string):
+    print(str(datetime.datetime.now().time()) + ' ' + ConsoleTextHeaders.INFO + string)
 
 
 if __name__ == '__main__':
@@ -208,11 +256,6 @@ if __name__ == '__main__':
                         type=dir_path,
                         help='path to the config file (json)')
 
-    parser.add_argument('--voice-mode-file',
-                        type=dir_path,
-                        dest='voice_mode_file',
-                        help='path to the voice config file (txt)')
-
     parser.add_argument('-d', '--debug',
                         dest='debug',
                         action='store_true',
@@ -220,25 +263,44 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.debug:
+        print_logging_info('debug mode is ON')
+        global face_tracker_initialize_time, psd_load_time
+
     config_file = open(args.config, encoding='utf8')
     config_data = json.load(config_file)
-    config_data['debug'] = args.debug
-    print('loaded config: ' + config_data['config_name'])
+    config_file.close()
 
-    if args.voice_mode_file != None:
-        voice_mode_file = open(args.voice_mode_file, mode='rt', encoding='utf8')
-        print('voice mode config: ' + args.voice_mode_file)
+    config_data['debug'] = args.debug
+
+    print_logging_info('loaded config: ' + config_data['config_name'])
 
     face_tracker.set_config_data(config_data)
 
+    if args.debug:
+        print_logging_info('initializing face tracker...')
+        face_tracker_initialize_time = time.time()
+
     while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
+
+    if args.debug:
+        face_tracker_initialize_time = time.time() - face_tracker_initialize_time
+        print_logging_info('face tracker initialized in ' + '%.0fms' % (face_tracker_initialize_time * 1000))
+
+    if args.debug:
+        print_logging_info('loading PSD file...')
+        psd_load_time = time.time()
 
     psd = PSDImage.open(config_data['psd_file_path'])
 
     all_layers, size = extract_layers_from_psd(psd)
     add_depth_to_layers(all_layers)
+
+    if args.debug:
+        psd_load_time = time.time() - psd_load_time
+        print_logging_info('PSD file loaded in ' + '%.0fms' % (psd_load_time * 1000))
+        print_logging_info('OpenGL drawing will start NOW...')
+
     gl_drawing_loop(all_layers, size)
-    config_file.close()
-    voice_mode_file.close()
     exit(0)

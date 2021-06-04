@@ -1,0 +1,7 @@
+dlib>=19.22.0
+opencv-python>=4.5.1.48
+numpy>=1.19.2
+glfw>=2.1.0
+psd-tools>=1.9.17
+PyOpenGL
+PyOpenGL_accelerate
