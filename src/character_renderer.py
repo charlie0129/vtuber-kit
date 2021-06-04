@@ -178,6 +178,9 @@ def manual_start(_config_data_, is_debug_enabled=False):
     config_data = _config_data_
     config_data['debug'] = is_debug_enabled
 
+    if not is_first_run:
+        print_logging_info('face tracker and renderer has been resumed')
+
     if is_debug_enabled:
         print_logging_info('debug mode is ON')
         global face_tracker_initialize_time, psd_load_time
@@ -223,6 +226,7 @@ def manual_stop():
     global should_close_window
     should_close_window = True
     face_tracker.pause_face_tracker()
+    print_logging_info('face tracker and renderer has been stopped or paused')
 
 
 class Colors:
