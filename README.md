@@ -6,6 +6,8 @@
 
     `pip3 install -r requirements_cli.txt`
 
+    你可能需要先安装 `cmake` (`pip3 install Cmake`) 才能正确编译并安装依赖中的 `dlib` (尤其是在 `Windows` 下)
+
 2. 查阅 `assets/sample_config.json` 来获取配置文件样例，主要看一下文件路径的部分，等会你可能需要修改，里面的属性应该很好理解（指那些文件路径，复杂的不用管）。你可以直接用这个样例配置文件（由于里面的数据对应我用的模型，就先得问我要~~萝莉~~模型）或自己写一个
 
 3. 准备必要数据
