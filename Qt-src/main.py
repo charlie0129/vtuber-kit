@@ -1,6 +1,7 @@
 import json
 from threading import Thread
 import os, sys
+
 path = os.getcwd()
 sys.path.append(path)
 
@@ -76,7 +77,7 @@ class myPhotoShooter(QWidget):
     def show_camera(self):
         flag, self.image = self.cap.read()  # 从视频流中读取
         show = self.image
-        #show = cv2.resize(self.image, (640, 480))  # 把读到的帧的大小重新设置为 640x480
+        # show = cv2.resize(self.image, (640, 480))  # 把读到的帧的大小重新设置为 640x480
         show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)  # 视频色彩转换回RGB
         showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0],
                                  QtGui.QImage.Format_RGB888)  # 把读取到的视频数据变成QImage形式
@@ -98,13 +99,13 @@ class myPhotoShooter(QWidget):
                 saveImage.save("assets/std_face_open.png", format="PNG")
                 self.user_step = 2
                 self.ui.label_step1.setTextFormat(Qt.RichText)
-                self.ui.label_step1.setText("<font color=\"#00FF00\">1.张开眼睛和嘴巴，点击拍摄照片</font>")
+                self.ui.label_step1.setText("<font color=\"#01B468\">1.张开眼睛和嘴巴，点击拍摄照片</font>")
                 self.ui.button_back.setEnabled(True)
             elif self.user_step == 2:
                 self.ui.label_closeImg.setPixmap(QtGui.QPixmap.fromImage(showImage))
                 saveImage.save("assets/std_face_closed.png", format="PNG")
                 self.ui.label_step2.setTextFormat(Qt.RichText)
-                self.ui.label_step2.setText("<font color=\"#00FF00\">2.闭上眼睛和嘴巴，点击拍摄照片</font>")
+                self.ui.label_step2.setText("<font color=\"#01B468\">2.闭上眼睛和嘴巴，点击拍摄照片</font>")
                 self.user_step = 3
                 self.ui.button_confrim.setEnabled(True)
         except Exception as e:
@@ -131,6 +132,18 @@ class myPhotoShooter(QWidget):
         self.cap.release()
         event.accept()
 
+
+class QSSHelper:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def LoadQSSFile():
+        styleFile = "Qt-src/qss/MacOS.qss"
+        with open(styleFile, 'r') as f:
+            return f.read()
+
+
 class myMainForm(QMainWindow):
     def __init__(self):
         # 调用父类构造函数，初始化空窗口
@@ -155,7 +168,6 @@ class myMainForm(QMainWindow):
         self.ui.pushButton_choosePsd.clicked.connect(self.scan_psd_files)
         self.initVCcomboBox()
         self.ui.comboBox_vc.currentIndexChanged.connect(self.on_voiceKind_Changed)
-        self.ui.pushButton_testMic.clicked.connect(self.test_mic)
         self.checkPhotoShoot()
 
     def initVCcomboBox(self):
@@ -169,7 +181,6 @@ class myMainForm(QMainWindow):
                        "颤音"]
         self.ui.comboBox_vc.addItems(voice_texts)
 
-
     def checkPhotoShoot(self):
         for roots, dirs, files in os.walk("./assets"):
             photo1 = "std_face_closed.png"
@@ -179,7 +190,6 @@ class myMainForm(QMainWindow):
                 self.ui.checkBox_finish.setChecked(True)
                 self.ui.checkBox_finish.setText("已完成")
                 self.is_photo_shooted = True
-
 
     def scan_psd_files(self):
         self.ui.comboBox_chooseChara.disconnect()
@@ -212,6 +222,8 @@ class myMainForm(QMainWindow):
 
     def open_camera_capture(self):
         self.camWindow = myPhotoShooter()
+        qssStyle = QSSHelper.LoadQSSFile()
+        self.camWindow.setStyleSheet(qssStyle)
         self.camWindow.ui.button_confrim.clicked.connect(self.updateCaptureChecked)
         self.camWindow.show()
 
@@ -226,9 +238,6 @@ class myMainForm(QMainWindow):
         vc_configFile = open(self.vc_configFilePath, "w")
         vc_configFile.writelines(str(self.ui.comboBox_vc.currentIndex()))
         vc_configFile.close()
-
-    def test_mic(self):
-        pass
 
     def start_voiceChangeThreadFunc(self):
         try:
@@ -247,7 +256,7 @@ class myMainForm(QMainWindow):
         config_data = json.load(config_file)
         config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
         config_file.close()
-        with open(self.configFilePath, 'w',encoding="utf-8") as f:
+        with open(self.configFilePath, 'w', encoding="utf-8") as f:
             json.dump(config_data, f, indent=2, ensure_ascii=False)
 
         CR.manual_start(config_data, self.ui.checkBox_debugOn.isChecked())
@@ -270,6 +279,7 @@ class myMainForm(QMainWindow):
                         self.vc_thread.start()
                     self.ui.pushButton_start.setText("停止")
                     self.setEnvButtons(False)
+                    self.ui.pushButton_shootPhoto.setEnabled(False)
                 else:
                     msg = QtWidgets.QMessageBox.warning(self, '无法启动', "动作采集未完成！", buttons=QtWidgets.QMessageBox.Ok)
                     return
@@ -293,17 +303,13 @@ class myMainForm(QMainWindow):
         self.ui.pushButton_shootPhoto.setEnabled(bool)
         self.ui.checkBox_enableVC.setEnabled(bool)
         self.ui.checkBox_debugOn.setEnabled(bool)
-        self.ui.pushButton_testMic.setEnabled(bool)
 
 
 if __name__ == '__main__':
     app = QApplication([])
     wid = myMainForm()
 
-    styleFile = "Qt-src/qss/MacOS.qss"
-    f = open(styleFile,'r')
-    qssStyle = f.read()
-    f.close()
+    qssStyle = QSSHelper.LoadQSSFile()
     wid.setStyleSheet(qssStyle)
 
     wid.show()

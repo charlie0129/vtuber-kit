@@ -22,8 +22,19 @@
      <height>480</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <pointsize>18</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>【摄像机未打开】</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QPushButton" name="button_openCam">
@@ -34,6 +45,13 @@
      <width>111</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>打开摄像头</string>
@@ -48,6 +66,13 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>拍摄照片</string>
    </property>
@@ -60,6 +85,13 @@
      <width>111</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>返回上一步</string>
@@ -74,6 +106,13 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>完成</string>
    </property>
@@ -86,6 +125,13 @@
      <width>251</width>
      <height>71</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>打开摄像头后，请按照以下顺序操作:</string>
@@ -100,6 +146,13 @@
      <height>22</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
   </widget>
   <widget class="QLabel" name="label_step1">
    <property name="geometry">
@@ -109,6 +162,13 @@
      <width>251</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>1.张开眼睛和嘴巴，点击拍摄照片</string>
@@ -123,6 +183,13 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>2.闭上眼睛和嘴巴，点击拍摄照片</string>
    </property>
@@ -135,6 +202,13 @@
      <width>251</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>文鼎大签字笔体G30</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>3.确认样张后，点击完成</string>
@@ -149,8 +223,16 @@
      <height>168</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑 Light</family>
+    </font>
+   </property>
    <property name="text">
     <string>睁眼动作图像</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_closeImg">
@@ -162,8 +244,16 @@
      <height>168</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑 Light</family>
+    </font>
+   </property>
    <property name="text">
     <string>闭眼动作图像</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>

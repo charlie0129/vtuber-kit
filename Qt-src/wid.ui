@@ -524,7 +524,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>80</y>
+       <y>110</y>
        <width>91</width>
        <height>31</height>
       </rect>
@@ -541,32 +541,11 @@
       <string>音色</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_testMic">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>140</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>文鼎大签字笔体G30</family>
-       <pointsize>9</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>麦克风测试</string>
-     </property>
-    </widget>
     <widget class="QComboBox" name="comboBox_vc">
      <property name="geometry">
       <rect>
        <x>190</x>
-       <y>80</y>
+       <y>110</y>
        <width>121</width>
        <height>31</height>
       </rect>
@@ -584,8 +563,8 @@
     <widget class="QCheckBox" name="checkBox_enableVC">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>30</y>
+       <x>120</x>
+       <y>50</y>
        <width>281</width>
        <height>31</height>
       </rect>
