@@ -107,7 +107,6 @@ def gl_drawing_loop(all_layers, psd_size):
         layer['texture_location'] = texture_location
 
     while not (glfw.window_should_close(window) or should_close_window):
-        read_mode_from_voice_mode_file()
         glfw.poll_events()
         glClearColor(0, 0, 0, 0)
         glClear(GL_COLOR_BUFFER_BIT)
@@ -157,19 +156,6 @@ def gl_drawing_loop(all_layers, psd_size):
         glfw.swap_buffers(window)
         if config_data['debug']:
             cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
-
-
-def read_mode_from_voice_mode_file():
-    global voice_mode_file, should_close_window
-
-    if voice_mode_file == None:
-        return
-
-    voice_mode_file.seek(0)
-    file_content = voice_mode_file.read()
-
-    if file_content == '-1':
-        should_close_window = True
 
 
 def dir_path(string):
