@@ -6,7 +6,7 @@
  * Available at: https://github.com/GTRONICK/QSS/blob/master/MacOS.qss
  */
 QMainWindow {
-    background-color:#ececec;
+    background-color:#FBFBFF;
 }
 QPushButton, QToolButton, QCommandLinkButton{
     padding: 0 5px 0 5px;
