@@ -157,6 +157,9 @@ def gl_drawing_loop(all_layers, psd_size):
         if config_data['debug']:
             cv2.imshow("Camera Debug", face_tracker.get_debug_camera_image())
 
+    glfw.destroy_window(window)
+    cv2.destroyWindow("Camera Debug")
+
 
 def dir_path(string):
     if os.path.isfile(string):
