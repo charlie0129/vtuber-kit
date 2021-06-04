@@ -130,8 +130,7 @@ def camera_capture_loop():
     cap = cv2.VideoCapture(config_data['camera_path'])
     while True:
         if should_face_tracking_be_paused:
-            time.sleep(0.2)
-            return
+            time.sleep(0.1)
 
         global cam_img
         ret, cam_img = cap.read()
