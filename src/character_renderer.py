@@ -191,8 +191,8 @@ def manual_start(_config_data_, is_debug_enabled=False):
         print_logging_info('initializing face tracker...')
         face_tracker_initialize_time = time.time()
 
-    if is_first_run:
-        face_tracker.set_config_data(config_data)
+
+    face_tracker.set_config_data(config_data)
 
     face_tracker.resume_face_tracker()
 
