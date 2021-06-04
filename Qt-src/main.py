@@ -95,14 +95,14 @@ class myPhotoShooter(QWidget):
                                      QtGui.QImage.Format_RGB888)
             if self.user_step == 1:
                 self.ui.label_openImg.setPixmap(QtGui.QPixmap.fromImage(showImage))
-                saveImage.save("/assets/std_face_open.png", format="PNG")
+                saveImage.save("assets/std_face_open.png", format="PNG")
                 self.user_step = 2
                 self.ui.label_step1.setTextFormat(Qt.RichText)
                 self.ui.label_step1.setText("<font color=\"#00FF00\">1.张开眼睛和嘴巴，点击拍摄照片</font>")
                 self.ui.button_back.setEnabled(True)
             elif self.user_step == 2:
                 self.ui.label_closeImg.setPixmap(QtGui.QPixmap.fromImage(showImage))
-                saveImage.save("/assets/std_face_closed.png", format="PNG")
+                saveImage.save("assets/std_face_closed.png", format="PNG")
                 self.ui.label_step2.setTextFormat(Qt.RichText)
                 self.ui.label_step2.setText("<font color=\"#00FF00\">2.闭上眼睛和嘴巴，点击拍摄照片</font>")
                 self.user_step = 3
