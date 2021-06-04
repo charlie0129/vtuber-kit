@@ -23,6 +23,7 @@ config_data = {}
 
 voice_mode_file = None
 should_close_window = False
+is_first_run = True
 
 
 def extract_layers_from_psd(psd):
@@ -171,26 +172,51 @@ def dir_path(string):
 def manual_start(_config_data_, is_debug_enabled=False):
     global config_data
     global should_close_window
+    global is_first_run
     should_close_window = False
 
     config_data = _config_data_
     config_data['debug'] = is_debug_enabled
 
-    print('loaded config: ' + config_data['config_name'])
+    if is_debug_enabled:
+        print_logging_info('debug mode is ON')
+        global face_tracker_initialize_time, psd_load_time
 
-    face_tracker.set_config_data(config_data)
+    print_logging_info('loaded config: ' + config_data['config_name'])
+
+    if is_debug_enabled:
+        print_logging_info('initializing face tracker...')
+        face_tracker_initialize_time = time.time()
+
+    if is_first_run:
+        face_tracker.set_config_data(config_data)
 
     face_tracker.resume_face_tracker()
 
     while face_tracker.get_camera_image() is None:
         time.sleep(0.1)
 
-    global psd, all_layers, size
-    psd = PSDImage.open(config_data['psd_file_path'])
+    if is_debug_enabled:
+        face_tracker_initialize_time = time.time() - face_tracker_initialize_time
+        print_logging_info('face tracker initialized in ' + '%.0fms' % (face_tracker_initialize_time * 1000))
 
-    all_layers, size = extract_layers_from_psd(psd)
-    add_depth_to_layers(all_layers)
+    if is_debug_enabled:
+        print_logging_info('loading PSD file...')
+        psd_load_time = time.time()
+
+    if is_first_run:
+        global psd, all_layers, size
+        psd = PSDImage.open(config_data['psd_file_path'])
+        all_layers, size = extract_layers_from_psd(psd)
+        add_depth_to_layers(all_layers)
+
+    if is_debug_enabled:
+        psd_load_time = time.time() - psd_load_time
+        print_logging_info('PSD file loaded in ' + '%.0fms' % (psd_load_time * 1000))
+        print_logging_info('OpenGL drawing will start NOW...')
+
     gl_drawing_loop(all_layers, size)
+    is_first_run = False
 
 
 def manual_stop():
