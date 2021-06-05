@@ -155,6 +155,7 @@ class myMainForm(QMainWindow):
 
         self.chara_name = None
         self.camWindow = None
+        self.camNum = -1
         self.vtb_thread = None
         self.vc_thread = None
         self.is_vtbAlive = False
@@ -231,6 +232,8 @@ class myMainForm(QMainWindow):
         self.ui.checkBox_finish.setChecked(True)
         self.ui.checkBox_finish.setText("已完成")
         self.is_photo_shooted = True
+        self.camNum = self.camWindow.CAM_NUM
+        print(self.camNum)
         self.camWindow.close()
 
     def on_voiceKind_Changed(self):
@@ -241,12 +244,12 @@ class myMainForm(QMainWindow):
 
     def start_voiceChangeThreadFunc(self):
         try:
-            p_res = os.popen("cd assets/ & start Sound.exe")
-            print(p_res)
-
             vc_configFile = open(self.vc_configFilePath, "w")
             vc_configFile.writelines(str(self.ui.comboBox_vc.currentIndex()))
             vc_configFile.close()
+
+            p_res = os.popen("cd assets/ & start Sound.exe")
+            print(p_res)
 
         except Exception as e:
             print(e)
@@ -255,6 +258,8 @@ class myMainForm(QMainWindow):
         config_file = open(self.configFilePath, encoding="utf-8")
         config_data = json.load(config_file)
         config_data["psd_file_path"] = "assets/" + self.chara_name + ".psd"
+        config_data["camera_path"] = self.camNum
+
         config_file.close()
         with open(self.configFilePath, 'w', encoding="utf-8") as f:
             json.dump(config_data, f, indent=2, ensure_ascii=False)
